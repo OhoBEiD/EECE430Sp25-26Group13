@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Floating VolleyHub Label -->
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+            <path d="M50 4 C50 4, 30 30, 50 50 C70 70, 50 96, 50 96" stroke="currentColor" stroke-width="4" fill="none"/>
+            <path d="M8 30 C8 30, 40 35, 50 50 C60 65, 92 70, 92 70" stroke="currentColor" stroke-width="4" fill="none"/>
+            <path d="M8 70 C8 70, 40 65, 50 50 C60 35, 92 30, 92 30" stroke="currentColor" stroke-width="4" fill="none"/>
+        </svg>
+        VolleyHub
+    </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        <div>
+            <h2>{{ player.name }} &mdash; Performance Analytics</h2>
+            <p class="subtitle">AI-powered performance tracking and skill analysis</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'analytics_select' %}" class="btn btn-secondary btn-lg">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                All Players
+            </a>
+            <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Record Stats
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if not latest_stats %}
+<!-- Empty State -->
+<div class="glass-card-dark" style="text-align: center; padding: 80px 32px;">
+    <div style="font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5;">&#128202;</div>
+    <p style="color: rgba(255,255,255,0.6); font-size: 1rem; margin-bottom: 24px;">No performance data recorded yet for {{ player.name }}.</p>
+    <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Record First Stats
+    </a>
+</div>
+
+{% else %}
+
+<!-- Section 1: Stat Cards -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <!-- Serve Accuracy -->
+    <div class="glass-card-dark" style="padding: 24px; text-align: center;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Serve Accuracy</div>
+        <div style="font-size: 2.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1;">{{ latest_stats.serve_accuracy }}%</div>
+        {% if diffs %}
+        <div style="margin-top: 8px; font-size: 0.8rem; font-weight: 500;
+            {% if diffs.serve > 0 %}color: #34c759;{% elif diffs.serve < 0 %}color: #ff3b30;{% else %}color: rgba(255,255,255,0.4);{% endif %}">
+            {% if diffs.serve > 0 %}&#9650; +{{ diffs.serve }}{% elif diffs.serve < 0 %}&#9660; {{ diffs.serve }}{% else %}&#8212; No change{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Spike Success -->
+    <div class="glass-card-dark" style="padding: 24px; text-align: center;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Spike Success</div>
+        <div style="font-size: 2.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1;">{{ latest_stats.spike_success }}%</div>
+        {% if diffs %}
+        <div style="margin-top: 8px; font-size: 0.8rem; font-weight: 500;
+            {% if diffs.spike > 0 %}color: #34c759;{% elif diffs.spike < 0 %}color: #ff3b30;{% else %}color: rgba(255,255,255,0.4);{% endif %}">
+            {% if diffs.spike > 0 %}&#9650; +{{ diffs.spike }}{% elif diffs.spike < 0 %}&#9660; {{ diffs.spike }}{% else %}&#8212; No change{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Block Rate -->
+    <div class="glass-card-dark" style="padding: 24px; text-align: center;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Block Rate</div>
+        <div style="font-size: 2.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1;">{{ latest_stats.block_rate }}%</div>
+        {% if diffs %}
+        <div style="margin-top: 8px; font-size: 0.8rem; font-weight: 500;
+            {% if diffs.block > 0 %}color: #34c759;{% elif diffs.block < 0 %}color: #ff3b30;{% else %}color: rgba(255,255,255,0.4);{% endif %}">
+            {% if diffs.block > 0 %}&#9650; +{{ diffs.block }}{% elif diffs.block < 0 %}&#9660; {{ diffs.block }}{% else %}&#8212; No change{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Dig Success -->
+    <div class="glass-card-dark" style="padding: 24px; text-align: center;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;">Dig Success</div>
+        <div style="font-size: 2.4rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1;">{{ latest_stats.dig_success }}%</div>
+        {% if diffs %}
+        <div style="margin-top: 8px; font-size: 0.8rem; font-weight: 500;
+            {% if diffs.dig > 0 %}color: #34c759;{% elif diffs.dig < 0 %}color: #ff3b30;{% else %}color: rgba(255,255,255,0.4);{% endif %}">
+            {% if diffs.dig > 0 %}&#9650; +{{ diffs.dig }}{% elif diffs.dig < 0 %}&#9660; {{ diffs.dig }}{% else %}&#8212; No change{% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Overall Score Banner -->
+<div class="glass-card-dark" style="padding: 20px 32px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: rgba(88, 86, 214, 0.2);
+            border: 2px solid rgba(88, 86, 214, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 700; color: #fff;
+        ">{{ overall_score }}</div>
+        <div>
+            <div style="font-size: 1rem; font-weight: 600; color: #fff;">Overall Score</div>
+            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.45);">Average across all 6 skill categories</div>
+        </div>
+    </div>
+    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.4);">
+        Latest: {{ latest_stats.date_recorded|date:"M d, Y" }}
+    </div>
+</div>
+
+<!-- Section 2 & 3: Charts Row -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+    <!-- Radar Chart -->
+    <div class="glass-card-dark">
+        <div style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 20px;">Skills Radar</div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="radarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Line Chart -->
+    <div class="glass-card-dark">
+        <div style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 20px;">Performance Trend</div>
+        <div style="height: 320px; position: relative;">
+            <canvas id="trendChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Section 4: Recent Stats History -->
+<div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">Recent Stats History</h3>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Last 5 recorded entries</p>
+    </div>
+</div>
+
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Serve</th>
+                <th>Spike</th>
+                <th>Block</th>
+                <th>Dig</th>
+                <th>Set</th>
+                <th>Receive</th>
+                <th>Overall</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="stagger">
+            {% for stat in recent_stats %}
+            <tr>
+                <td style="font-weight: 500;">{{ stat.date_recorded|date:"M d, Y" }}</td>
+                <td>{{ stat.serve_accuracy }}%</td>
+                <td>{{ stat.spike_success }}%</td>
+                <td>{{ stat.block_rate }}%</td>
+                <td>{{ stat.dig_success }}%</td>
+                <td>{{ stat.set_accuracy }}%</td>
+                <td>{{ stat.receive_rating }}%</td>
+                <td>
+                    <span style="
+                        display: inline-block;
+                        padding: 3px 10px;
+                        border-radius: 100px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        background: rgba(88, 86, 214, 0.2);
+                        border: 1px solid rgba(88, 86, 214, 0.3);
+                        color: rgba(175, 173, 255, 0.9);
+                    ">{{ stat.overall_score }}</span>
+                </td>
+                <td>
+                    <form method="post" action="{% url 'stats_delete' stat.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this stats entry?');">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global chart defaults for dark glass containers
+    Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
+    Chart.defaults.font.family = "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif";
+
+    // Parse stats data from Django
+    const statsData = {{ stats_json|safe }};
+
+    // ── Radar Chart ──
+    const radarCtx = document.getElementById('radarChart').getContext('2d');
+    const radarConfig = {
+        type: 'radar',
+        data: {
+            labels: ['Serving', 'Spiking', 'Blocking', 'Digging', 'Setting', 'Receiving'],
+            datasets: [
+                {
+                    label: 'Current',
+                    data: [
+                        {{ latest_stats.serve_accuracy }},
+                        {{ latest_stats.spike_success }},
+                        {{ latest_stats.block_rate }},
+                        {{ latest_stats.dig_success }},
+                        {{ latest_stats.set_accuracy }},
+                        {{ latest_stats.receive_rating }}
+                    ],
+                    backgroundColor: 'rgba(88, 86, 214, 0.3)',
+                    borderColor: 'rgba(88, 86, 214, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(88, 86, 214, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointRadius: 4,
+                },
+                {% if previous_stats %}
+                {
+                    label: 'Previous',
+                    data: [
+                        {{ previous_stats.serve_accuracy }},
+                        {{ previous_stats.spike_success }},
+                        {{ previous_stats.block_rate }},
+                        {{ previous_stats.dig_success }},
+                        {{ previous_stats.set_accuracy }},
+                        {{ previous_stats.receive_rating }}
+                    ],
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointBackgroundColor: 'rgba(255, 255, 255, 0.4)',
+                    pointBorderColor: 'rgba(255, 255, 255, 0.6)',
+                    pointBorderWidth: 1,
+                    pointRadius: 3,
+                }
+                {% endif %}
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20,
+                        color: 'rgba(255, 255, 255, 0.3)',
+                        backdropColor: 'transparent',
+                        font: { size: 10 }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    angleLines: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    pointLabels: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: { size: 12, weight: '500' }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: { size: 11 }
+                    }
+                }
+            }
+        }
+    };
+    new Chart(radarCtx, radarConfig);
+
+    // ── Performance Trend Line Chart ──
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    const trendConfig = {
+        type: 'line',
+        data: {
+            labels: statsData.map(s => s.date),
+            datasets: [{
+                label: 'Overall Score',
+                data: statsData.map(s => s.overall),
+                borderColor: 'rgba(88, 86, 214, 1)',
+                backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                borderWidth: 2.5,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(88, 86, 214, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 1,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        font: { size: 11 },
+                        stepSize: 20,
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        font: { size: 11 },
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    border: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                    backdropColor: 'transparent',
+                    titleColor: '#fff',
+                    bodyColor: 'rgba(255, 255, 255, 0.8)',
+                    borderColor: 'rgba(255, 255, 255, 0.15)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 10,
+                    titleFont: { weight: '600' },
+                }
+            }
+        }
+    };
+    new Chart(trendCtx, trendConfig);
+</script>
+
+<!-- Responsive grid override for mobile -->
+<style>
+    @media (max-width: 900px) {
+        div[style*="grid-template-columns: repeat(4"] {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+        div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+    @media (max-width: 500px) {
+        div[style*="grid-template-columns: repeat(4"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+{% endif %}
+{% endblock %}

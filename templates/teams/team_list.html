@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Teams</h2>
+    <p class="subtitle">Manage your volleyball teams and squads</p>
+</div>
+
+<div style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; animation: fadeUp 0.8s ease-out both;">
+    <a href="{% url 'team_create' %}" class="btn btn-success btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create Team
+    </a>
+    <a href="{% url 'schedule_view' %}" class="btn btn-primary btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Schedule
+    </a>
+</div>
+
+{% if teams %}
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age Group</th>
+                <th>Coach</th>
+                <th>Players</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="stagger">
+            {% for team in teams %}
+            <tr>
+                <td><a href="{% url 'team_detail' team.pk %}">{{ team.name }}</a></td>
+                <td><span class="badge-position">{{ team.get_age_group_display }}</span></td>
+                <td style="color: rgba(255,255,255,0.55);">{{ team.coach_name }}</td>
+                <td style="font-variant-numeric: tabular-nums; font-weight: 500;">{{ team.player_count }}</td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'team_detail' team.pk %}" class="btn btn-primary">View</a>
+                        <a href="{% url 'team_edit' team.pk %}" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'team_delete' team.pk %}" class="btn btn-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="glass-card">
+    <div class="empty-state">
+        <div class="empty-icon">&#127951;</div>
+        <p>No teams created yet.</p>
+        <a href="{% url 'team_create' %}" class="btn btn-success btn-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create First Team
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

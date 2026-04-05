@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Floating VolleyHub Label -->
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+            <path d="M50 4 C50 4, 30 30, 50 50 C70 70, 50 96, 50 96" stroke="currentColor" stroke-width="4" fill="none"/>
+            <path d="M8 30 C8 30, 40 35, 50 50 C60 65, 92 70, 92 70" stroke="currentColor" stroke-width="4" fill="none"/>
+            <path d="M8 70 C8 70, 40 65, 50 50 C60 35, 92 30, 92 30" stroke="currentColor" stroke-width="4" fill="none"/>
+        </svg>
+        VolleyHub
+    </div>
+</div>
+
+<div class="page-header">
+    <h2>Delete Stats Entry</h2>
+    <p class="subtitle">This action cannot be undone</p>
+</div>
+
+<div class="glass-card-dark" style="text-align: center; padding: 48px 32px;">
+    <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.5;">&#9888;&#65039;</div>
+    <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 8px;">
+        Are you sure you want to delete this stats entry?
+    </p>
+    <p style="color: rgba(255,255,255,0.45); font-size: 0.9rem; margin-bottom: 32px;">
+        <strong>{{ stat.player.name }}</strong> &mdash; {{ stat.date_recorded|date:"M d, Y" }}
+        (Overall: {{ stat.overall_score }})
+    </p>
+    <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button type="submit" class="btn btn-danger btn-lg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Yes, Delete
+            </button>
+            <a href="{% url 'analytics_dashboard' stat.player.pk %}" class="btn btn-secondary btn-lg">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

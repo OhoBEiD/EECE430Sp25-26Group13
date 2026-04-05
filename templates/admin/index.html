@@ -1,0 +1,755 @@
+{% load i18n log %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="NONE,NOARCHIVE">
+    <title>VolleyHub - Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-bg-strong: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --glass-border-strong: rgba(0, 0, 0, 0.12);
+            --glass-blur: blur(40px) saturate(180%);
+            --accent: #5856d6;
+            --accent-glow: rgba(88, 86, 214, 0.2);
+            --accent-soft: rgba(88, 86, 214, 0.08);
+            --surface: #f2f1f6;
+            --text-primary: #1c1c1e;
+            --text-secondary: #6e6e73;
+            --text-tertiary: #aeaeb2;
+            --danger: #ff3b30;
+            --success: #34c759;
+            --warning: #ff9500;
+            --info: #007aff;
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 24px;
+            --radius-pill: 100px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--surface);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Soft ambient orbs ── */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-mesh .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: orbFloat 20s ease-in-out infinite alternate;
+        }
+
+        .bg-mesh .orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(88, 86, 214, 0.12), transparent 70%);
+            top: -15%; left: -10%;
+            animation-duration: 25s;
+        }
+
+        .bg-mesh .orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 122, 255, 0.08), transparent 70%);
+            bottom: -20%; right: -10%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .bg-mesh .orb-3 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(52, 199, 89, 0.06), transparent 70%);
+            top: 45%; left: 55%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+            100% { transform: translate(15px, -15px) scale(1.02); }
+        }
+
+        /* ── Flowing lines ── */
+        .flow-lines {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flow-line {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.08);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+
+        .flow-line-1 {
+            stroke-dasharray: 1800; stroke-dashoffset: 1800;
+            stroke-width: 1.2; stroke: rgba(0, 0, 0, 0.07);
+            animation: flowDraw 25s ease-in-out infinite alternate, flowDrift1 30s ease-in-out infinite alternate;
+        }
+        .flow-line-2 {
+            stroke-dasharray: 1900; stroke-dashoffset: 1900;
+            stroke-width: 1.8; stroke: rgba(0, 0, 0, 0.06);
+            animation: flowDraw 28s ease-in-out infinite alternate, flowDrift2 35s ease-in-out infinite alternate;
+            animation-delay: -4s, -8s;
+        }
+        .flow-line-3 {
+            stroke-dasharray: 1700; stroke-dashoffset: 1700;
+            stroke-width: 1; stroke: rgba(0, 0, 0, 0.09);
+            animation: flowDraw 22s ease-in-out infinite alternate, flowDrift3 28s ease-in-out infinite alternate;
+            animation-delay: -7s, -3s;
+        }
+        .flow-line-4 {
+            stroke-dasharray: 1850; stroke-dashoffset: 1850;
+            stroke-width: 2; stroke: rgba(0, 0, 0, 0.05);
+            animation: flowDraw 30s ease-in-out infinite alternate, flowDrift1 32s ease-in-out infinite alternate;
+            animation-delay: -12s, -15s;
+        }
+        .flow-line-5 {
+            stroke-dasharray: 1750; stroke-dashoffset: 1750;
+            stroke-width: 1.3; stroke: rgba(0, 0, 0, 0.07);
+            animation: flowDraw 26s ease-in-out infinite alternate, flowDrift2 27s ease-in-out infinite alternate;
+            animation-delay: -9s, -6s;
+        }
+
+        @keyframes flowDraw {
+            0%   { stroke-dashoffset: 1800; }
+            40%  { stroke-dashoffset: 0; }
+            60%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -1800; }
+        }
+        @keyframes flowDrift1 {
+            0%   { transform: translateY(0) scaleY(1); }
+            50%  { transform: translateY(-30px) scaleY(1.03); }
+            100% { transform: translateY(20px) scaleY(0.97); }
+        }
+        @keyframes flowDrift2 {
+            0%   { transform: translateY(10px) scaleY(0.98); }
+            50%  { transform: translateY(-20px) scaleY(1.02); }
+            100% { transform: translateY(25px) scaleY(1.01); }
+        }
+        @keyframes flowDrift3 {
+            0%   { transform: translateY(-15px) scaleY(1.01); }
+            50%  { transform: translateY(25px) scaleY(0.96); }
+            100% { transform: translateY(-10px) scaleY(1.04); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Main container ── */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 60px 24px 140px;
+        }
+
+        /* ── Hero banner ── */
+        .hero-banner {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 32px;
+            animation: fadeUp 0.7s ease-out both;
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 40%, #48484a 100%);
+            padding: 40px 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg .deco-1 {
+            position: absolute;
+            top: -40px; right: -20px;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(88, 86, 214, 0.15);
+            filter: blur(60px);
+        }
+
+        .hero-bg .deco-2 {
+            position: absolute;
+            bottom: -60px; left: 30%;
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            background: rgba(0, 122, 255, 0.1);
+            filter: blur(50px);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .hero-content h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            color: #fff;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 8px;
+        }
+
+        .hero-content p {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 400;
+            max-width: 400px;
+        }
+
+        .hero-accent {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(88, 86, 214, 0.3), rgba(0, 122, 255, 0.2), transparent);
+        }
+
+        /* ── Welcome bar ── */
+        .welcome-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding: 12px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            animation: fadeUp 0.8s ease-out both;
+            animation-delay: 0.08s;
+            flex-wrap: wrap;
+        }
+
+        .welcome-text {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        .welcome-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .welcome-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .welcome-actions a,
+        .welcome-actions button {
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0;
+        }
+
+        .welcome-actions a:hover,
+        .welcome-actions button:hover {
+            color: var(--accent);
+        }
+
+        .welcome-sep {
+            color: var(--text-tertiary);
+            opacity: 0.4;
+            font-size: 0.75rem;
+        }
+
+        /* ── Dashboard grid ── */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            animation: fadeUp 0.8s ease-out both;
+            animation-delay: 0.15s;
+        }
+
+        /* ── App cards ── */
+        .app-card {
+            background: rgba(40, 40, 45, 0.65);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .app-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-card-header a {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            transition: color 0.2s;
+        }
+
+        .app-card-header a:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .model-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background 0.2s ease;
+        }
+
+        .model-row:last-child {
+            border-bottom: none;
+        }
+
+        .model-row:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .model-name a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .model-name a:hover {
+            color: #fff;
+        }
+
+        .model-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .model-actions a {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 14px;
+            border-radius: var(--radius-pill);
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .model-actions .add-link {
+            background: rgba(52, 199, 89, 0.15);
+            color: #5edea0;
+            border: 1px solid rgba(52, 199, 89, 0.25);
+        }
+        .model-actions .add-link:hover {
+            background: rgba(52, 199, 89, 0.25);
+        }
+
+        .model-actions .change-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .model-actions .change-link:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* ── Recent actions sidebar ── */
+        .recent-actions {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
+            height: fit-content;
+        }
+
+        .recent-actions h2 {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+        }
+
+        .action-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .action-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-item a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .action-item a:hover {
+            color: #4a48c4;
+        }
+
+        .action-type {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .action-type.add { background: var(--success); }
+        .action-type.change { background: var(--info); }
+        .action-type.delete { background: var(--danger); }
+
+        .action-model {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        .no-actions {
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        /* ── Floating Dock ── */
+        .floating-dock {
+            position: fixed;
+            bottom: max(1.25rem, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            z-index: 1000;
+            animation: dockEntry 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+        }
+
+        @keyframes dockEntry {
+            to { transform: translateX(-50%) translateY(0); }
+        }
+
+        .dock-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: var(--radius-pill);
+            background: rgba(60, 60, 67, 0.38);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .dock-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            font-family: inherit;
+        }
+
+        .dock-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.12);
+            color: #fff;
+        }
+
+        .dock-item.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1c1c1e;
+        }
+
+        .dock-item.active:hover {
+            background: #fff;
+            color: #1c1c1e;
+        }
+
+        .dock-item svg {
+            width: 18px; height: 18px;
+            fill: none; stroke: currentColor;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .dock-separator {
+            width: 1px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.18);
+            margin: 0 4px;
+            flex-shrink: 0;
+        }
+
+        .dock-item .tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            padding: 5px 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dock-item:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .main-content { padding: 40px 16px 130px; }
+            .hero-content h1 { font-size: 1.6rem; }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .dock-bar { gap: 4px; padding: 6px 10px; }
+            .dock-item { width: 42px; height: 42px; }
+            .dock-item svg { width: 16px; height: 16px; }
+            .welcome-bar { flex-direction: column; align-items: flex-start; }
+            .flow-lines { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Soft ambient background -->
+    <div class="bg-mesh">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <svg class="flow-lines" viewBox="0 0 1440 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="flow-line flow-line-1" d="M-100,300 C200,280 400,450 720,400 S1100,200 1540,350" />
+            <path class="flow-line flow-line-2" d="M-50,550 C250,500 500,650 800,580 S1150,450 1540,600" />
+            <path class="flow-line flow-line-3" d="M-80,150 C300,200 550,100 850,180 S1200,300 1540,200" />
+            <path class="flow-line flow-line-4" d="M-60,700 C200,750 450,620 750,700 S1050,800 1540,720" />
+            <path class="flow-line flow-line-5" d="M-120,450 C150,400 380,520 680,460 S1000,350 1540,480" />
+        </svg>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <div class="hero-bg">
+                <div class="deco-1"></div>
+                <div class="deco-2"></div>
+                <div style="position:absolute; right:40px; top:50%; transform:translateY(-50%); opacity:0.08;">
+                    <svg width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </div>
+                <div class="hero-content">
+                    <div class="hero-badge">&#9881; Administration</div>
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage your application data, users, and system settings.</p>
+                </div>
+            </div>
+            <div class="hero-accent"></div>
+        </div>
+
+        <!-- Welcome bar -->
+        <div class="welcome-bar">
+            <div class="welcome-text">
+                {% translate 'Welcome,' %} <strong>{% firstof user.get_short_name user.get_username %}</strong>
+            </div>
+            <div class="welcome-actions">
+                <a href="/">{% translate 'View Site' %}</a>
+                <span class="welcome-sep">/</span>
+                {% if user.has_usable_password %}
+                <a href="{% url 'admin:password_change' %}">{% translate 'Change Password' %}</a>
+                <span class="welcome-sep">/</span>
+                {% endif %}
+                <form method="post" action="{% url 'admin:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">{% translate 'Log out' %}</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard grid -->
+        <div class="dashboard-grid">
+            <!-- Apps column -->
+            <div class="apps-column">
+                {% if app_list %}
+                    {% for app in app_list %}
+                    <div class="app-card">
+                        <div class="app-card-header">
+                            <a href="{{ app.app_url }}">{{ app.name }}</a>
+                        </div>
+                        {% for model in app.models %}
+                        <div class="model-row">
+                            <div class="model-name">
+                                {% if model.admin_url %}
+                                <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                                {% else %}
+                                <span style="color: rgba(255,255,255,0.5);">{{ model.name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="model-actions">
+                                {% if model.add_url %}
+                                <a href="{{ model.add_url }}" class="add-link">+ Add</a>
+                                {% endif %}
+                                {% if model.admin_url %}
+                                <a href="{{ model.admin_url }}" class="change-link">
+                                    {% if model.view_only %}View{% else %}Change{% endif %}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="app-card" style="padding: 40px 20px; text-align: center;">
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">{% translate "You don't have permission to view or edit anything." %}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Recent actions sidebar -->
+            <div class="recent-actions">
+                <h2>{% translate 'Recent Actions' %}</h2>
+                {% get_admin_log 10 as admin_log for_user user %}
+                {% if admin_log %}
+                <ul class="action-list">
+                    {% for entry in admin_log %}
+                    <li class="action-item">
+                        <span class="action-type {% if entry.is_addition %}add{% elif entry.is_change %}change{% elif entry.is_deletion %}delete{% endif %}"></span>
+                        {% if entry.is_deletion or not entry.get_admin_url %}
+                            {{ entry.object_repr }}
+                        {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                        {% endif %}
+                        {% if entry.content_type %}
+                        <div class="action-model">{{ entry.content_type.name|capfirst }}</div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="no-actions">{% translate 'None available' %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Dock -->
+    <div class="floating-dock">
+        <div class="dock-bar">
+            <a href="/" class="dock-item">
+                <span class="tooltip">View Site</span>
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <a href="{% url 'admin:index' %}" class="dock-item active">
+                <span class="tooltip">Dashboard</span>
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <form method="post" action="{% url 'admin:logout' %}" style="display:contents;">
+                {% csrf_token %}
+                <button type="submit" class="dock-item">
+                    <span class="tooltip">Log out</span>
+                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

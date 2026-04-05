@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VolleyHub - Player Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-bg-strong: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --glass-border-strong: rgba(0, 0, 0, 0.12);
+            --glass-blur: blur(40px) saturate(180%);
+            --accent: #5856d6;
+            --accent-glow: rgba(88, 86, 214, 0.2);
+            --accent-soft: rgba(88, 86, 214, 0.08);
+            --surface: #f2f1f6;
+            --text-primary: #1c1c1e;
+            --text-secondary: #6e6e73;
+            --text-tertiary: #aeaeb2;
+            --danger: #ff3b30;
+            --success: #34c759;
+            --warning: #ff9500;
+            --info: #007aff;
+            --radius-sm: 12px;
+            --radius-md: 18px;
+            --radius-lg: 24px;
+            --radius-pill: 100px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--surface);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Soft ambient orbs ── */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-mesh .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: orbFloat 20s ease-in-out infinite alternate;
+        }
+
+        .bg-mesh .orb-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(88, 86, 214, 0.12), transparent 70%);
+            top: -15%; left: -10%;
+            animation-duration: 25s;
+        }
+
+        .bg-mesh .orb-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0, 122, 255, 0.08), transparent 70%);
+            bottom: -20%; right: -10%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .bg-mesh .orb-3 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(52, 199, 89, 0.06), transparent 70%);
+            top: 45%; left: 55%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -40px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+            100% { transform: translate(15px, -15px) scale(1.02); }
+        }
+
+        /* ── Flowing lines ── */
+        .flow-lines {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flow-line {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.08);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+
+        .flow-line-1 {
+            stroke-dasharray: 1800;
+            stroke-dashoffset: 1800;
+            stroke-width: 1.2;
+            stroke: rgba(0, 0, 0, 0.07);
+            animation: flowDraw 25s ease-in-out infinite alternate,
+                       flowDrift1 30s ease-in-out infinite alternate;
+        }
+
+        .flow-line-2 {
+            stroke-dasharray: 1900;
+            stroke-dashoffset: 1900;
+            stroke-width: 1.8;
+            stroke: rgba(0, 0, 0, 0.06);
+            animation: flowDraw 28s ease-in-out infinite alternate,
+                       flowDrift2 35s ease-in-out infinite alternate;
+            animation-delay: -4s, -8s;
+        }
+
+        .flow-line-3 {
+            stroke-dasharray: 1700;
+            stroke-dashoffset: 1700;
+            stroke-width: 1;
+            stroke: rgba(0, 0, 0, 0.09);
+            animation: flowDraw 22s ease-in-out infinite alternate,
+                       flowDrift3 28s ease-in-out infinite alternate;
+            animation-delay: -7s, -3s;
+        }
+
+        .flow-line-4 {
+            stroke-dasharray: 1850;
+            stroke-dashoffset: 1850;
+            stroke-width: 2;
+            stroke: rgba(0, 0, 0, 0.05);
+            animation: flowDraw 30s ease-in-out infinite alternate,
+                       flowDrift1 32s ease-in-out infinite alternate;
+            animation-delay: -12s, -15s;
+        }
+
+        .flow-line-5 {
+            stroke-dasharray: 1750;
+            stroke-dashoffset: 1750;
+            stroke-width: 1.3;
+            stroke: rgba(0, 0, 0, 0.07);
+            animation: flowDraw 26s ease-in-out infinite alternate,
+                       flowDrift2 27s ease-in-out infinite alternate;
+            animation-delay: -9s, -6s;
+        }
+
+        @keyframes flowDraw {
+            0%   { stroke-dashoffset: 1800; }
+            40%  { stroke-dashoffset: 0; }
+            60%  { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -1800; }
+        }
+
+        @keyframes flowDrift1 {
+            0%   { transform: translateY(0) scaleY(1); }
+            50%  { transform: translateY(-30px) scaleY(1.03); }
+            100% { transform: translateY(20px) scaleY(0.97); }
+        }
+
+        @keyframes flowDrift2 {
+            0%   { transform: translateY(10px) scaleY(0.98); }
+            50%  { transform: translateY(-20px) scaleY(1.02); }
+            100% { transform: translateY(25px) scaleY(1.01); }
+        }
+
+        @keyframes flowDrift3 {
+            0%   { transform: translateY(-15px) scaleY(1.01); }
+            50%  { transform: translateY(25px) scaleY(0.96); }
+            100% { transform: translateY(-10px) scaleY(1.04); }
+        }
+
+        /* ── Main container ── */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 24px 140px;
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            margin-bottom: 32px;
+            animation: fadeUp 0.8s ease-out both;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            line-height: 1.15;
+        }
+
+        .page-header .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Glass card ── */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.03);
+            animation: fadeUp 0.8s ease-out both;
+            animation-delay: 0.1s;
+        }
+
+        /* ── Glass table ── */
+        .glass-table-wrapper {
+            background: rgba(40, 40, 45, 0.65);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: fadeUp 0.8s ease-out both;
+            animation-delay: 0.15s;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th:first-child {
+            border-top-left-radius: 0;
+        }
+
+        th:last-child {
+            border-top-right-radius: 0;
+        }
+
+        td {
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: transparent;
+        }
+
+        tr { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        tbody tr:hover td { background: rgba(255, 255, 255, 0.1); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        td a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        td a:hover { color: rgba(255, 255, 255, 0.7); }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border: none;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: rgba(52, 199, 89, 0.15);
+            color: #5edea0;
+            border: 1px solid rgba(52, 199, 89, 0.25);
+        }
+        .btn-success:hover {
+            background: rgba(52, 199, 89, 0.25);
+            box-shadow: 0 2px 12px rgba(52, 199, 89, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: rgba(255, 149, 0, 0.15);
+            color: #ffb340;
+            border: 1px solid rgba(255, 149, 0, 0.25);
+        }
+        .btn-warning:hover {
+            background: rgba(255, 149, 0, 0.25);
+            box-shadow: 0 2px 12px rgba(255, 149, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: rgba(255, 59, 48, 0.12);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+        .btn-danger:hover {
+            background: rgba(255, 59, 48, 0.22);
+            box-shadow: 0 2px 12px rgba(255, 59, 48, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .btn-lg {
+            padding: 11px 26px;
+            font-size: 0.88rem;
+        }
+
+        .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* ── Dark glass card ── */
+        .glass-card-dark {
+            background: rgba(40, 40, 45, 0.65);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: fadeUp 0.8s ease-out both;
+            animation-delay: 0.1s;
+        }
+
+        /* ── Form elements ── */
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+        }
+
+        .form-group-dark { margin-bottom: 20px; }
+
+        .form-group-dark label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.02em;
+        }
+
+        .form-group-dark .form-control,
+        .form-group-dark input,
+        .form-group-dark select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #fff;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-group-dark .form-control:focus,
+        .form-group-dark input:focus,
+        .form-group-dark select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.25);
+        }
+
+        .form-group-dark .form-control::placeholder,
+        .form-group-dark input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group-dark select option {
+            background: #2c2c2e;
+            color: #fff;
+        }
+
+        .form-group-dark .errorlist li {
+            color: #ff6b6b;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--glass-border-strong);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .form-control::placeholder { color: var(--text-tertiary); }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23aeaeb2' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        select.form-control option {
+            background: #fff;
+            color: var(--text-primary);
+        }
+
+        .errorlist { list-style: none; padding: 0; margin: 6px 0 0 0; }
+        .errorlist li { color: var(--danger); font-size: 0.8rem; }
+
+        /* ── Detail rows ── */
+        .detail-row {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+        .detail-row:last-of-type { border-bottom: none; }
+
+        .detail-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            width: 150px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ── Position badge ── */
+        .badge-position {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(88, 86, 214, 0.25);
+            border: 1px solid rgba(88, 86, 214, 0.3);
+            color: rgba(175, 173, 255, 0.9);
+        }
+
+        /* ── Empty state ── */
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state .empty-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state p { color: var(--text-secondary); font-size: 1rem; margin-bottom: 24px; }
+
+        /* ── Floating Dock (gray glass) ── */
+        .floating-dock {
+            position: fixed;
+            bottom: max(1.25rem, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            z-index: 1000;
+            animation: dockEntry 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+        }
+
+        @keyframes dockEntry {
+            to { transform: translateX(-50%) translateY(0); }
+        }
+
+        .dock-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: var(--radius-pill);
+            background: rgba(60, 60, 67, 0.38);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .dock-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.75);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            font-family: inherit;
+        }
+
+        .dock-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.12);
+            color: #fff;
+        }
+
+        .dock-item.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1c1c1e;
+        }
+
+        .dock-item.active:hover {
+            background: #fff;
+            color: #1c1c1e;
+        }
+
+        .dock-item svg {
+            width: 18px; height: 18px;
+            fill: none; stroke: currentColor;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .dock-separator {
+            width: 1px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.18);
+            margin: 0 4px;
+            flex-shrink: 0;
+        }
+
+        .dock-item .tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            padding: 5px 12px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dock-item:hover .tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Floating Label (gray glass, mirrors dock) ── */
+        .floating-label {
+            position: fixed;
+            top: max(1.25rem, env(safe-area-inset-top));
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            z-index: 1000;
+            animation: labelEntry 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+        }
+
+        @keyframes labelEntry {
+            to { transform: translateX(-50%) translateY(0); }
+        }
+
+        .label-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            background: rgba(60, 60, 67, 0.38);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 6px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .label-bar svg {
+            flex-shrink: 0;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .main-content { padding: 40px 16px 130px; }
+            .page-header h2 { font-size: 1.7rem; }
+            .glass-card { padding: 24px 20px; }
+            table { display: block; overflow-x: auto; }
+            .dock-bar { gap: 4px; padding: 6px 10px; }
+            .dock-item { width: 42px; height: 42px; }
+            .dock-item svg { width: 16px; height: 16px; }
+            .detail-row { flex-direction: column; gap: 4px; }
+            .detail-label { width: auto; }
+            .flow-lines { opacity: 0.6; }
+        }
+
+        /* ── Stagger children animation ── */
+        .stagger > * { animation: fadeUp 0.6s ease-out both; }
+        .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+        .stagger > *:nth-child(2) { animation-delay: 0.1s; }
+        .stagger > *:nth-child(3) { animation-delay: 0.15s; }
+        .stagger > *:nth-child(4) { animation-delay: 0.2s; }
+        .stagger > *:nth-child(5) { animation-delay: 0.25s; }
+        .stagger > *:nth-child(6) { animation-delay: 0.3s; }
+        .stagger > *:nth-child(7) { animation-delay: 0.35s; }
+        .stagger > *:nth-child(8) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+
+    <!-- Soft ambient background -->
+    <div class="bg-mesh">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+
+        <!-- Flowing lines overlay -->
+        <svg class="flow-lines" viewBox="0 0 1440 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="flow-line flow-line-1"
+                  d="M-100,300 C200,280 400,450 720,400 S1100,200 1540,350" />
+            <path class="flow-line flow-line-2"
+                  d="M-50,550 C250,500 500,650 800,580 S1150,450 1540,600" />
+            <path class="flow-line flow-line-3"
+                  d="M-80,150 C300,200 550,100 850,180 S1200,300 1540,200" />
+            <path class="flow-line flow-line-4"
+                  d="M-60,700 C200,750 450,620 750,700 S1050,800 1540,720" />
+            <path class="flow-line flow-line-5"
+                  d="M-120,450 C150,400 380,520 680,460 S1000,350 1540,480" />
+        </svg>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Floating Dock (gray glass) -->
+    <div class="floating-dock">
+        <div class="dock-bar">
+            <a href="{% url 'player_list' %}" class="dock-item {% if request.resolver_match.url_name == 'player_list' %}active{% endif %}">
+                <span class="tooltip">Players</span>
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <a href="{% url 'team_list' %}" class="dock-item {% if request.resolver_match.url_name == 'team_list' or request.resolver_match.url_name == 'team_detail' %}active{% endif %}">
+                <span class="tooltip">Teams</span>
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <a href="{% url 'analytics_select' %}" class="dock-item {% if request.resolver_match.url_name == 'analytics_select' or request.resolver_match.url_name == 'analytics_dashboard' %}active{% endif %}">
+                <span class="tooltip">Analytics</span>
+                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <a href="{% url 'injury_list' %}" class="dock-item {% if request.resolver_match.url_name == 'injury_list' or request.resolver_match.url_name == 'injury_detail' %}active{% endif %}">
+                <span class="tooltip">Injuries</span>
+                <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </a>
+            <div class="dock-separator"></div>
+            <a href="/admin/" class="dock-item">
+                <span class="tooltip">Admin</span>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
