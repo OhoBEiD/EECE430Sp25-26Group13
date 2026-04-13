@@ -94,6 +94,31 @@
                 max-width: 400px;
             ">Manage your volleyball team lineup, track positions, and keep player records up to date.</p>
 
+            <form method="get" style="
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-bottom: 20px;
+                max-width: 440px;
+            ">
+                <input type="text" name="q" value="{{ q }}" placeholder="Search by name…"
+                       style="
+                           flex: 1;
+                           padding: 10px 14px;
+                           background: rgba(255, 255, 255, 0.08);
+                           border: 1px solid rgba(255, 255, 255, 0.18);
+                           border-radius: 100px;
+                           color: #fff;
+                           font-family: inherit;
+                           font-size: 0.85rem;
+                           outline: none;
+                       ">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if q %}
+                <a href="{% url 'player_list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </form>
+
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                 <a href="{% url 'player_add' %}" style="
                     display: inline-flex;
