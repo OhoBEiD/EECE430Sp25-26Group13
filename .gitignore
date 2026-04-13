@@ -1,8 +1,33 @@
+# Python
 __pycache__/
 *.pyc
-db.sqlite3
+*.pyo
+*.pyd
+
+# Virtual environments
 my_venv/
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+media/
+staticfiles/
+
+# Environment
 .env
+.env.local
+
+# Editor / OS
 .DS_Store
-*.docx
+.idea/
+.vscode/
+*.swp
+
+# Office lock files
 ~$*.docx
+*.docx
