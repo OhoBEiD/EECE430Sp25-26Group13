@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        try {
+            if (sessionStorage.getItem('vh_visited')) {
+                document.documentElement.classList.add('no-anim');
+            }
+        } catch (e) {}
+    </script>
     <title>VolleyHub - Player Management</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -659,6 +666,26 @@
             flex-shrink: 0;
         }
 
+        /* ── No-animation mode for same-session navigations ── */
+        html.no-anim .floating-dock {
+            animation: none !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+        html.no-anim .floating-label {
+            animation: none !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+        html.no-anim .page-header,
+        html.no-anim .glass-card,
+        html.no-anim .glass-card-dark,
+        html.no-anim .glass-table-wrapper,
+        html.no-anim .stagger > *,
+        html.no-anim [style*="fadeUp"] {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .main-content { padding: 40px 16px 130px; }
@@ -758,5 +785,8 @@
         </div>
     </div>
 
+    <script>
+        try { sessionStorage.setItem('vh_visited', '1'); } catch (e) {}
+    </script>
 </body>
 </html>
