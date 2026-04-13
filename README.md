@@ -61,7 +61,7 @@ A user story is **Done** when:
 
 | Sprint | Dates | Planned (pts) | Completed (pts) | Tag |
 |--------|-------|---------------|-----------------|-----|
-| 1 | TBD | 10 | TBD | `v0.1-sprint1` |
+| 1 | 2026-04-14 | 10 | 10 | `v0.1-sprint1` |
 | 2 | TBD | TBD | TBD | `v0.2-sprint2` |
 
 Retros: [`docs/sprint1-retro.md`](docs/sprint1-retro.md) · [`docs/sprint2-retro.md`](docs/sprint2-retro.md)
