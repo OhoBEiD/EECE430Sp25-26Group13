@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 from django.utils import timezone
@@ -22,6 +23,7 @@ def team_detail(request, pk):
     })
 
 
+@login_required
 def team_create(request):
     if request.method == 'POST':
         form = TeamForm(request.POST)
@@ -33,6 +35,7 @@ def team_create(request):
     return render(request, 'teams/team_form.html', {'form': form, 'title': 'Create Team'})
 
 
+@login_required
 def team_edit(request, pk):
     team = get_object_or_404(Team, pk=pk)
     if request.method == 'POST':
@@ -45,6 +48,7 @@ def team_edit(request, pk):
     return render(request, 'teams/team_form.html', {'form': form, 'title': 'Edit Team'})
 
 
+@login_required
 def team_delete(request, pk):
     team = get_object_or_404(Team, pk=pk)
     if request.method == 'POST':
@@ -53,6 +57,7 @@ def team_delete(request, pk):
     return render(request, 'teams/team_confirm_delete.html', {'team': team})
 
 
+@login_required
 def event_create(request, team_pk):
     team = get_object_or_404(Team, pk=team_pk)
     if request.method == 'POST':
@@ -67,6 +72,7 @@ def event_create(request, team_pk):
     return render(request, 'teams/event_form.html', {'form': form, 'team': team})
 
 
+@login_required
 def event_delete(request, pk):
     event = get_object_or_404(Event, pk=pk)
     team_pk = event.team.pk

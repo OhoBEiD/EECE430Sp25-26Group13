@@ -1,4 +1,5 @@
 import json
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from players.models import VolleyPlayer
 from .models import PlayerStats
@@ -53,6 +54,7 @@ def analytics_dashboard(request, player_pk):
     return render(request, 'analytics/dashboard.html', context)
 
 
+@login_required
 def record_stats(request, player_pk):
     player = get_object_or_404(VolleyPlayer, pk=player_pk)
     if request.method == 'POST':
@@ -70,6 +72,7 @@ def record_stats(request, player_pk):
     })
 
 
+@login_required
 def stats_delete(request, pk):
     stat = get_object_or_404(PlayerStats, pk=pk)
     player_pk = stat.player.pk
