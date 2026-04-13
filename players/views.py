@@ -5,8 +5,11 @@ from .forms import PlayerForm
 
 
 def player_list(request):
+    q = request.GET.get('q', '').strip()
     players = VolleyPlayer.objects.all()
-    return render(request, 'player_list.html', {'players': players})
+    if q:
+        players = players.filter(name__icontains=q)
+    return render(request, 'player_list.html', {'players': players, 'q': q})
 
 
 def player_detail(request, pk):
