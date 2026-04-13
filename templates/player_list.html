@@ -205,15 +205,43 @@
 </div>
 
 {% if page_obj.has_other_pages %}
-<div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
+<div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 24px;">
     {% if page_obj.has_previous %}
-        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Prev</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--glass-border-strong);
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        ">&larr; Prev</a>
     {% endif %}
     <span style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 500;">
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
     {% if page_obj.has_next %}
-        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next</a>
+        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}" style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--glass-border-strong);
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        ">Next &rarr;</a>
     {% endif %}
 </div>
 {% endif %}
