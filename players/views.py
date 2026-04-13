@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import VolleyPlayer
 from .forms import PlayerForm
@@ -13,6 +14,7 @@ def player_detail(request, pk):
     return render(request, 'player_detail.html', {'player': player})
 
 
+@login_required
 def player_add(request):
     if request.method == 'POST':
         form = PlayerForm(request.POST)
@@ -24,6 +26,7 @@ def player_add(request):
     return render(request, 'player_form.html', {'form': form, 'title': 'Add Player'})
 
 
+@login_required
 def player_edit(request, pk):
     player = get_object_or_404(VolleyPlayer, pk=pk)
     if request.method == 'POST':
@@ -36,6 +39,7 @@ def player_edit(request, pk):
     return render(request, 'player_form.html', {'form': form, 'title': 'Edit Player'})
 
 
+@login_required
 def player_delete(request, pk):
     player = get_object_or_404(VolleyPlayer, pk=pk)
     if request.method == 'POST':

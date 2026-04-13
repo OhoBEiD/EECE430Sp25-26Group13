@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, F
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -53,6 +54,7 @@ def injury_detail(request, pk):
     })
 
 
+@login_required
 def injury_create(request):
     if request.method == 'POST':
         form = InjuryForm(request.POST)
@@ -67,6 +69,7 @@ def injury_create(request):
     })
 
 
+@login_required
 def injury_edit(request, pk):
     injury = get_object_or_404(Injury, pk=pk)
     if request.method == 'POST':
@@ -82,6 +85,7 @@ def injury_edit(request, pk):
     })
 
 
+@login_required
 def injury_delete(request, pk):
     injury = get_object_or_404(Injury.objects.select_related('player'), pk=pk)
     if request.method == 'POST':
