@@ -154,7 +154,7 @@
                     border: 1px solid rgba(255, 255, 255, 0.1);
                 ">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    {{ players|length }} Player{{ players|length|pluralize }}
+                    {{ page_obj.paginator.count }} Player{{ page_obj.paginator.count|pluralize }}
                 </span>
                 {% endif %}
             </div>
@@ -203,6 +203,20 @@
         </tbody>
     </table>
 </div>
+
+{% if page_obj.has_other_pages %}
+<div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
+    {% if page_obj.has_previous %}
+        <a class="btn btn-secondary" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Prev</a>
+    {% endif %}
+    <span style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 500;">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+        <a class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Next</a>
+    {% endif %}
+</div>
+{% endif %}
 {% else %}
 <div class="glass-card">
     <div class="empty-state">

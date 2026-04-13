@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import VolleyPlayer
 from .forms import PlayerForm
@@ -6,10 +7,15 @@ from .forms import PlayerForm
 
 def player_list(request):
     q = request.GET.get('q', '').strip()
-    players = VolleyPlayer.objects.all()
+    qs = VolleyPlayer.objects.all()
     if q:
-        players = players.filter(name__icontains=q)
-    return render(request, 'player_list.html', {'players': players, 'q': q})
+        qs = qs.filter(name__icontains=q)
+    page_obj = Paginator(qs, 10).get_page(request.GET.get('page'))
+    return render(request, 'player_list.html', {
+        'players': page_obj,
+        'page_obj': page_obj,
+        'q': q,
+    })
 
 
 def player_detail(request, pk):
