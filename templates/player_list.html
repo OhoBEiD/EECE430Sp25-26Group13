@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <!-- Floating VolleyHub Label -->
@@ -192,7 +193,7 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+                <th style="width: 64px;"></th>
                 <th>Player</th>
                 <th>Joined</th>
                 <th>Position</th>
@@ -204,8 +205,24 @@
         <tbody class="stagger">
             {% for player in players %}
             <tr>
-                <td style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">#{{ player.id }}</td>
-                <td><a href="{% url 'player_detail' player.pk %}">{{ player.name }}</a></td>
+                <td style="padding: 10px 16px 10px 20px;">
+                    {% if player.photo %}
+                    <img src="{% static player.photo %}" alt="{{ player.name }}"
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.15); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);">
+                    {% else %}
+                    <div style="
+                        width: 40px; height: 40px; border-radius: 50%;
+                        background: linear-gradient(135deg, rgba(88, 86, 214, 0.5), rgba(0, 122, 255, 0.35));
+                        display: flex; align-items: center; justify-content: center;
+                        color: #fff; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
+                        border: 2px solid rgba(255, 255, 255, 0.15);
+                    ">{{ player.initials }}</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'player_detail' player.pk %}">{{ player.name }}</a>
+                    <span style="color: rgba(255,255,255,0.35); font-size: 0.72rem; margin-left: 6px;">#{{ player.id }}</span>
+                </td>
                 <td style="color: rgba(255,255,255,0.55);">{{ player.date_joined }}</td>
                 <td><span class="badge-position">{{ player.position }}</span></td>
                 <td style="font-variant-numeric: tabular-nums; font-weight: 500;">${{ player.salary }}</td>

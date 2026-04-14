@@ -106,6 +106,7 @@ class Command(BaseCommand):
                 salary=Decimal(salary),
                 contact_person=contact,
                 team=team,
+                photo=f'players/portraits/p{i + 1}.jpg',
             )
             players.append(p)
 
