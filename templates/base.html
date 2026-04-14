@@ -743,9 +743,14 @@
     <!-- Floating Dock (gray glass) -->
     <div class="floating-dock">
         <div class="dock-bar">
+            <a href="{% url 'dashboard' %}" class="dock-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <span class="tooltip">Dashboard</span>
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+            <div class="dock-separator"></div>
             <a href="{% url 'player_list' %}" class="dock-item {% if request.resolver_match.url_name == 'player_list' %}active{% endif %}">
                 <span class="tooltip">Players</span>
-                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
             </a>
             <div class="dock-separator"></div>
             <a href="{% url 'team_list' %}" class="dock-item {% if request.resolver_match.url_name == 'team_list' or request.resolver_match.url_name == 'team_detail' %}active{% endif %}">
