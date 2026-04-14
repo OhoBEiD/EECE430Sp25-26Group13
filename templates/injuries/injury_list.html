@@ -140,6 +140,50 @@
     "></div>
 </div>
 
+<!-- Status filter tabs -->
+<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+    <a href="{% url 'injury_list' %}" style="
+        padding: 8px 18px;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        {% if not status %}
+        background: var(--text-primary);
+        color: #fff;
+        border: 1px solid var(--text-primary);
+        {% else %}
+        background: rgba(255, 255, 255, 0.7);
+        color: var(--text-primary);
+        border: 1px solid var(--glass-border-strong);
+        {% endif %}
+    ">All</a>
+    {% for choice in status_choices %}
+    <a href="?status={{ choice }}" style="
+        padding: 8px 18px;
+        border-radius: 100px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        {% if status == choice %}
+            {% if choice == 'Active' %}
+            background: rgba(255, 59, 48, 0.18); color: #d93025; border: 1px solid rgba(255, 59, 48, 0.35);
+            {% elif choice == 'Recovering' %}
+            background: rgba(255, 149, 0, 0.18); color: #b35a00; border: 1px solid rgba(255, 149, 0, 0.35);
+            {% else %}
+            background: rgba(52, 199, 89, 0.18); color: #2f7d3a; border: 1px solid rgba(52, 199, 89, 0.35);
+            {% endif %}
+        {% else %}
+            background: rgba(255, 255, 255, 0.7);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border-strong);
+        {% endif %}
+    ">{{ choice }}</a>
+    {% endfor %}
+</div>
+
 <!-- Summary Stats Bar -->
 <div style="
     display: grid;
