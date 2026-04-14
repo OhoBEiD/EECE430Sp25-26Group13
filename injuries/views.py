@@ -8,13 +8,16 @@ from .models import Injury
 from .forms import InjuryForm
 
 
+INJURY_STATUS_CHOICES = ['Active', 'Recovering', 'Cleared']
+
+
 def injury_list(request):
-    injuries = Injury.objects.select_related('player').all()
-    active_count = injuries.filter(status='Active').count()
-    recovered_count = injuries.filter(status='Cleared').count()
+    all_injuries = Injury.objects.select_related('player').all()
+    active_count = all_injuries.filter(status='Active').count()
+    recovered_count = all_injuries.filter(status='Cleared').count()
 
     # Average recovery days for cleared injuries that have both dates
-    cleared_with_dates = injuries.filter(
+    cleared_with_dates = all_injuries.filter(
         status='Cleared',
         expected_return__isnull=False,
     )
@@ -30,11 +33,20 @@ def injury_list(request):
     else:
         avg_recovery = None
 
+    status = request.GET.get('status', '').strip()
+    if status in INJURY_STATUS_CHOICES:
+        injuries = all_injuries.filter(status=status)
+    else:
+        injuries = all_injuries
+        status = ''
+
     return render(request, 'injuries/injury_list.html', {
         'injuries': injuries,
         'active_count': active_count,
         'recovered_count': recovered_count,
         'avg_recovery': avg_recovery,
+        'status': status,
+        'status_choices': INJURY_STATUS_CHOICES,
     })
 
 
