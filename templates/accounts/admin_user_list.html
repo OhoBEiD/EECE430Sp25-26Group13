@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+        </svg>
+        Users &amp; roles
+    </div>
+</div>
+
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+    <div>
+        <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin: 0;">Users &amp; roles</h2>
+        <p style="margin: 4px 0 0; color: var(--text-secondary); font-size: 0.88rem;">Assign roles + link players. {{ users|length }} total user{{ users|length|pluralize }}.</p>
+    </div>
+    <a href="/admin/auth/user/add/" class="btn btn-secondary">+ Create user via Django admin</a>
+</div>
+
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Linked player</th>
+                <th>Coached teams</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td><strong style="color: #fff;">{{ u.username }}</strong>{% if u.is_superuser %} <span style="margin-left:6px; padding: 2px 8px; border-radius: 100px; font-size: 0.62rem; font-weight: 600; text-transform: uppercase; background: rgba(255, 215, 0, 0.18); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.35);">super</span>{% endif %}</td>
+                <td style="color: rgba(255,255,255,0.7);">{{ u.get_full_name|default:"—" }}</td>
+                <td>
+                    {% if u.profile %}
+                    <span style="padding: 4px 12px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; background: rgba(88, 86, 214, 0.18); color: rgba(175, 173, 255, 0.95); border: 1px solid rgba(88, 86, 214, 0.35);">{{ u.profile.role }}</span>
+                    {% else %}
+                    <span style="color: rgba(255,255,255,0.35);">—</span>
+                    {% endif %}
+                </td>
+                <td style="color: rgba(255,255,255,0.7);">{% if u.profile and u.profile.linked_player %}<a href="{% url 'player_detail' u.profile.linked_player.pk %}">{{ u.profile.linked_player.name }}</a>{% else %}—{% endif %}</td>
+                <td style="color: rgba(255,255,255,0.55);">{% for t in u.coached_teams.all %}{{ t.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</td>
+                <td>
+                    <a href="{% url 'admin_user_edit_role' u.pk %}" class="btn btn-warning">Edit role</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
