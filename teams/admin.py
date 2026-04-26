@@ -3,9 +3,10 @@ from .models import Team, Event
 
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'age_group', 'coach_name', 'created_at')
+    list_display = ('name', 'age_group', 'coach', 'created_at')
     list_filter = ('age_group',)
-    search_fields = ('name', 'coach_name')
+    search_fields = ('name', 'coach__username', 'coach__last_name')
+    autocomplete_fields = ('coach',)
 
 
 class EventAdmin(admin.ModelAdmin):

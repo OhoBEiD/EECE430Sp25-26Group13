@@ -43,11 +43,11 @@ DEMO_USERS = [
 DEMO_PASSWORD = 'demo12345'
 
 DEMO_TEAMS = [
-    {'name': 'Beirut Blazers', 'age_group': 'Senior', 'coach_name': 'Coach Ahmad Khoury',
+    {'name': 'Beirut Blazers', 'age_group': 'Senior',
      'description': 'Senior men\'s competitive squad — 2025 regional finalists.'},
-    {'name': 'Cedars U18', 'age_group': 'U18', 'coach_name': 'Coach Nour Saleh',
+    {'name': 'Cedars U18', 'age_group': 'U18',
      'description': 'Youth development program feeding the senior roster.'},
-    {'name': 'Phoenix Rising', 'age_group': 'U16', 'coach_name': 'Coach Rami Youssef',
+    {'name': 'Phoenix Rising', 'age_group': 'U16',
      'description': 'Under-16 girls\' team; focus on fundamentals and teamwork.'},
 ]
 

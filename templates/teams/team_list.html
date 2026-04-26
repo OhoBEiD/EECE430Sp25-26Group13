@@ -177,7 +177,7 @@
             <tr>
                 <td><a href="{% url 'team_detail' team.pk %}">{{ team.name }}</a></td>
                 <td><span class="badge-position">{{ team.get_age_group_display }}</span></td>
-                <td style="color: rgba(255,255,255,0.55);">{% if team.coach %}{{ team.coach.get_full_name|default:team.coach.username }}{% else %}{{ team.coach_name|default:"—" }}{% endif %}</td>
+                <td style="color: rgba(255,255,255,0.55);">{% if team.coach %}{{ team.coach.get_full_name|default:team.coach.username }}{% else %}—{% endif %}</td>
                 <td style="font-variant-numeric: tabular-nums; font-weight: 500;">{{ team.player_count }}</td>
                 <td>
                     <div class="actions">
