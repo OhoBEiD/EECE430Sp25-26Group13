@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'dashboard/_hero.html' with eyebrow="🏐 Coach console" title="Welcome back, coach" subtitle="A focused view of the teams you run — rosters, open injuries, and the next few sessions on the calendar." %}
+
+{% if team_summaries %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
+    {% for s in team_summaries %}
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px;">
+            <div>
+                <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(175, 173, 255, 0.85); margin-bottom: 4px;">{{ s.team.age_group }}</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: #fff;">{{ s.team.name }}</div>
+            </div>
+            <a href="{% url 'team_detail' s.team.pk %}" style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.9);">Open team &rarr;</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div>
+                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5);">Players</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: #fff;">{{ s.player_count }}</div>
+            </div>
+            <div>
+                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5);">Active injuries</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: {% if s.active_injury_count %}#ff6b6b{% else %}#5edea0{% endif %};">{{ s.active_injury_count }}</div>
+            </div>
+        </div>
+
+        {% if s.upcoming_events %}
+        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 8px;">Next sessions</div>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+            {% for ev in s.upcoming_events %}
+            <li style="font-size: 0.85rem; color: rgba(255,255,255,0.85);">
+                <strong>{{ ev.title }}</strong>
+                <span style="color: rgba(255,255,255,0.55);">— {{ ev.date|date:"D, M j" }} · {{ ev.start_time|time:"g:i A" }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div style="font-size: 0.78rem; color: rgba(255,255,255,0.5);">No sessions in the next 7 days.</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card">
+    <div class="empty-state">
+        <div class="empty-icon">&#128081;</div>
+        <p>You aren't assigned as the coach of any team yet — ask a manager to set you on a Team's <em>coach</em> field.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

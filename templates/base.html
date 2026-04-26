@@ -740,11 +740,11 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Floating Dock (gray glass) -->
+    <!-- Floating Dock (gray glass) — items appear per role; see PR 4 dock matrix -->
     <div class="floating-dock">
         <div class="dock-bar">
             <a href="{% url 'dashboard' %}" class="dock-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                <span class="tooltip">Dashboard</span>
+                <span class="tooltip">Dashboard ({{ user_role|default:"visitor"|title }})</span>
                 <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </a>
             <div class="dock-separator"></div>
@@ -758,20 +758,31 @@
                 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </a>
             <div class="dock-separator"></div>
+            <a href="{% url 'schedule_view' %}" class="dock-item {% if request.resolver_match.url_name == 'schedule_view' %}active{% endif %}">
+                <span class="tooltip">Schedule</span>
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </a>
+            {% if not is_visitor and not is_player %}
+            <div class="dock-separator"></div>
             <a href="{% url 'analytics_select' %}" class="dock-item {% if request.resolver_match.url_name == 'analytics_select' or request.resolver_match.url_name == 'analytics_dashboard' %}active{% endif %}">
                 <span class="tooltip">Analytics</span>
                 <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             </a>
+            {% endif %}
+            {% if not is_visitor %}
             <div class="dock-separator"></div>
             <a href="{% url 'injury_list' %}" class="dock-item {% if request.resolver_match.url_name == 'injury_list' or request.resolver_match.url_name == 'injury_detail' %}active{% endif %}">
                 <span class="tooltip">Injuries</span>
                 <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </a>
+            {% endif %}
+            {% if is_admin %}
             <div class="dock-separator"></div>
             <a href="/admin/" class="dock-item">
-                <span class="tooltip">Admin</span>
+                <span class="tooltip">Django admin</span>
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </a>
+            {% endif %}
             <div class="dock-separator"></div>
             {% if user.is_authenticated %}
             <form method="post" action="{% url 'logout' %}" style="display: inline; margin: 0; padding: 0;">

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+        </svg>
+        Forbidden
+    </div>
+</div>
+
+<div style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 4rem; margin-bottom: 16px;">🚫</div>
+    <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">You don't have access to that page</h1>
+    <p style="color: rgba(255,255,255,0.6); max-width: 480px; margin: 0 auto 24px;">
+        Your current role ({{ user_role|default:"visitor" }}) doesn't include this action. If you believe this is wrong, ask an admin to update your role from the Django admin user list.
+    </p>
+    <a href="{% url 'dashboard' %}" class="btn-primary" style="text-decoration: none; padding: 10px 20px; border-radius: 8px;">Back to dashboard</a>
+</div>
+{% endblock %}
