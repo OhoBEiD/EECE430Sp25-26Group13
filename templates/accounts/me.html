@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+        </svg>
+        My profile
+    </div>
+</div>
+
+<div class="glass-card-dark" style="padding: 32px; margin-bottom: 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px;">
+        <div>
+            <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(175, 173, 255, 0.85); margin-bottom: 4px;">Signed in as {{ user_role|title }}</div>
+            <h2 style="font-size: 1.6rem; font-weight: 700; color: #fff; margin: 0;">{{ user.get_full_name|default:user.username }}</h2>
+            <p style="margin: 4px 0 0; color: rgba(255,255,255,0.55); font-size: 0.85rem;">@{{ user.username }} &middot; {{ user.email|default:"no email on file" }}</p>
+        </div>
+        {% if linked_player %}
+        <a href="{% url 'player_detail' linked_player.pk %}" class="btn btn-primary">Open my player profile &rarr;</a>
+        {% endif %}
+    </div>
+
+    {% if linked_player %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 20px;">
+        <div>
+            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45);">Team</div>
+            <div style="font-size: 1rem; color: #fff; font-weight: 600;">{% if linked_player.team %}{{ linked_player.team.name }}{% else %}—{% endif %}</div>
+        </div>
+        <div>
+            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45);">Position</div>
+            <div style="font-size: 1rem; color: #fff; font-weight: 600;">{{ linked_player.position }}</div>
+        </div>
+        <div>
+            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45);">Joined</div>
+            <div style="font-size: 1rem; color: #fff; font-weight: 600;">{{ linked_player.date_joined|date:"M j, Y" }}</div>
+        </div>
+    </div>
+    {% else %}
+    <p style="margin-top: 16px; padding: 14px 16px; background: rgba(255,149,0,0.1); border: 1px solid rgba(255,149,0,0.25); border-radius: var(--radius-sm); color: rgba(255,255,255,0.7); font-size: 0.88rem;">Your account isn't linked to a player record yet — ask an admin to link you from <code>/admin-ui/users/</code> so this page can fill in your stats and team schedule.</p>
+    {% endif %}
+</div>
+
+{% if own_events %}
+<h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin: 32px 0 16px;">My next 14 days</h3>
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr><th>Event</th><th>Team</th><th>When</th><th>Location</th></tr>
+        </thead>
+        <tbody>
+            {% for ev in own_events %}
+            <tr>
+                <td><strong style="color:#fff;">{{ ev.title }}</strong> <span style="color: rgba(255,255,255,0.45); font-size:0.75rem; margin-left:6px;">{{ ev.event_type }}</span></td>
+                <td><a href="{% url 'team_detail' ev.team.pk %}">{{ ev.team.name }}</a></td>
+                <td style="color: rgba(255,255,255,0.7);">{{ ev.date|date:"D, M j" }} · {{ ev.start_time|time:"g:i A" }}</td>
+                <td style="color: rgba(255,255,255,0.55);">{{ ev.location }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if own_injuries %}
+<h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin: 32px 0 16px;">My injury history</h3>
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr><th>Type</th><th>Body part</th><th>Severity</th><th>Status</th><th>Reported</th><th>Expected return</th></tr>
+        </thead>
+        <tbody>
+            {% for inj in own_injuries %}
+            <tr>
+                <td>{{ inj.injury_type }}</td>
+                <td>{{ inj.body_part }}</td>
+                <td>{{ inj.severity }}</td>
+                <td>{{ inj.status }}</td>
+                <td style="color: rgba(255,255,255,0.7);">{{ inj.date_reported|date:"M j, Y" }}</td>
+                <td style="color: rgba(255,255,255,0.7);">{% if inj.expected_return %}{{ inj.expected_return|date:"M j, Y" }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% if recent_stats %}
+<h3 style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin: 32px 0 16px;">Recent stat lines</h3>
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr><th>Date</th><th>Serve</th><th>Spike</th><th>Block</th><th>Dig</th><th>Set</th><th>Receive</th><th>Overall</th></tr>
+        </thead>
+        <tbody>
+            {% for s in recent_stats %}
+            <tr>
+                <td style="color: rgba(255,255,255,0.7);">{{ s.date_recorded|date:"M j, Y" }}</td>
+                <td>{{ s.serve_accuracy }}</td>
+                <td>{{ s.spike_success }}</td>
+                <td>{{ s.block_rate }}</td>
+                <td>{{ s.dig_success }}</td>
+                <td>{{ s.set_accuracy }}</td>
+                <td>{{ s.receive_rating }}</td>
+                <td><strong style="color: #fff;">{{ s.overall_score }}</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

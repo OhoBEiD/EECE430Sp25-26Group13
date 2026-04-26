@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load role_tags %}
+
+{% block content %}
+<div class="floating-label">
+    <div class="label-bar">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="5"/>
+        </svg>
+        Coach console
+    </div>
+</div>
+
+{% if not team_summaries %}
+<div class="glass-card">
+    <div class="empty-state">
+        <div class="empty-icon">&#128081;</div>
+        <p>You aren't assigned as the coach of any team yet — ask a manager to set you on a Team's <em>coach</em> field.</p>
+    </div>
+</div>
+{% else %}
+{% for s in team_summaries %}
+<div class="glass-card-dark" style="padding: 28px 32px; margin-bottom: 24px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+        <div>
+            <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(175, 173, 255, 0.9); margin-bottom: 4px;">{{ s.team.age_group }}</div>
+            <h3 style="font-size: 1.4rem; font-weight: 700; color: #fff; margin: 0;">{{ s.team.name }}</h3>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'team_detail' s.team.pk %}" class="btn btn-primary">Open team</a>
+            {% can_edit_team s.team as can_edit %}
+            {% if can_edit %}
+            <a href="{% url 'event_create' s.team.pk %}" class="btn btn-success">+ Add event</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+            <h4 style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Roster ({{ s.roster|length }})</h4>
+            {% if s.roster %}
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto;">
+                {% for p in s.roster %}
+                <li style="font-size: 0.88rem; color: rgba(255,255,255,0.85);">
+                    <a href="{% url 'player_detail' p.pk %}" style="color: rgba(255,255,255,0.85);">{{ p.name }}</a>
+                    <span style="color: rgba(255,255,255,0.45); font-size: 0.78rem; margin-left: 6px;">{{ p.position }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">No players on this team.</p>
+            {% endif %}
+        </div>
+
+        <div>
+            <h4 style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Active injuries ({{ s.active_injuries|length }})</h4>
+            {% if s.active_injuries %}
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                {% for inj in s.active_injuries %}
+                <li style="font-size: 0.85rem; color: rgba(255,255,255,0.85);">
+                    <a href="{% url 'injury_detail' inj.pk %}" style="color: rgba(255,255,255,0.85);">{{ inj.player.name }}</a>
+                    <span style="color: rgba(255,107,107,0.95);"> — {{ inj.injury_type }} ({{ inj.severity }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p style="color: #5edea0; font-size: 0.88rem;">No active injuries 🎉</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if s.upcoming_events %}
+    <div style="margin-top: 20px;">
+        <h4 style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 10px;">Upcoming sessions</h4>
+        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+            {% for ev in s.upcoming_events %}
+            <li style="font-size: 0.88rem; color: rgba(255,255,255,0.85);">
+                <strong>{{ ev.title }}</strong>
+                <span style="color: rgba(255,255,255,0.55);">— {{ ev.date|date:"D, M j" }} · {{ ev.start_time|time:"g:i A" }} · {{ ev.location }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

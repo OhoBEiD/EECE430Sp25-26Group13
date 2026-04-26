@@ -776,7 +776,26 @@
                 <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </a>
             {% endif %}
+            {% if is_player %}
+            <div class="dock-separator"></div>
+            <a href="{% url 'me' %}" class="dock-item {% if request.resolver_match.url_name == 'me' %}active{% endif %}">
+                <span class="tooltip">My profile</span>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+            </a>
+            {% endif %}
+            {% if is_coach %}
+            <div class="dock-separator"></div>
+            <a href="{% url 'coach_landing' %}" class="dock-item {% if request.resolver_match.url_name == 'coach_landing' %}active{% endif %}">
+                <span class="tooltip">Coach console</span>
+                <svg viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M5 12V7a7 7 0 0 1 14 0v5"/><path d="M5 12v5a7 7 0 0 0 14 0v-5"/></svg>
+            </a>
+            {% endif %}
             {% if is_admin %}
+            <div class="dock-separator"></div>
+            <a href="{% url 'admin_user_list' %}" class="dock-item {% if request.resolver_match.url_name == 'admin_user_list' or request.resolver_match.url_name == 'admin_user_edit_role' %}active{% endif %}">
+                <span class="tooltip">Users &amp; roles</span>
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 11h-6"/><path d="M20 8v6"/></svg>
+            </a>
             <div class="dock-separator"></div>
             <a href="/admin/" class="dock-item">
                 <span class="tooltip">Django admin</span>
