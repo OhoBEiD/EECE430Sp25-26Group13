@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header" style="margin-bottom: 30px;">
+    <h2>Communications</h2>
+    <p class="subtitle">Join team and event discussion boards</p>
+</div>
+
+<div class="stagger">
+    {% for thread in threads %}
+    <div class="glass-card" style="margin-bottom: 12px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <span style="font-weight: 600; font-size: 1.1rem;">{{ thread.get_thread_type_display }}: {{ thread.name }}</span>
+                {% if thread.team %}<div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">{{ thread.team.name }}</div>{% endif %}
+            </div>
+            <a href="{% url 'chat_room' thread.pk %}" class="btn btn-primary">Join Room</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <p>No active chat channels available to you yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

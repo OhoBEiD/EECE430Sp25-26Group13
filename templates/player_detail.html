@@ -60,7 +60,7 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">Salary</span>
-                <span class="detail-value" style="font-variant-numeric: tabular-nums;">{% if is_visitor or is_scout %}<em style="color: rgba(255,255,255,0.45);">— redacted —</em>{% else %}${{ player.salary }}{% endif %}</span>
+                <span class="detail-value" style="font-variant-numeric: tabular-nums;">{% if is_visitor or is_scout or is_player and player != linked_player %}<em style="color: rgba(255,255,255,0.45);">— redacted —</em>{% else %}${{ player.salary }}{% endif %}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Contact</span>

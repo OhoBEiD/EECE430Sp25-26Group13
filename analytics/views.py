@@ -13,6 +13,11 @@ from players.models import VolleyPlayer
 
 from .forms import StatsForm
 from .models import PlayerStats
+from attendance.models import Attendance
+from feedback.models import Feedback
+from lineups.models import LineupSlot
+from injuries.models import Injury
+from django.utils import timezone
 
 
 ALL_AUTHED = (Role.PLAYER, Role.COACH, Role.MANAGER, Role.SCOUT, Role.ADMIN)
@@ -65,6 +70,23 @@ def analytics_dashboard(request, player_pk):
             'receive': latest_stats.receive_rating - previous_stats.receive_rating,
         }
 
+    today = timezone.now().date()
+    from datetime import timedelta
+    thirty_days_ago = today - timedelta(days=30)
+
+    # Attendance (last 30 days)
+    total_att = Attendance.objects.filter(player=player, event__date__gte=thirty_days_ago).count()
+    attendance_pct_30d = None
+    if total_att > 0:
+        attended = Attendance.objects.filter(player=player, event__date__gte=thirty_days_ago, status__in=['present', 'late']).count()
+        attendance_pct_30d = int((attended / total_att) * 100)
+
+    # Recent Feedback
+    recent_feedback = Feedback.objects.filter(player=player).order_by('-created_at')[:3]
+
+    # Active Injuries
+    active_injuries = Injury.objects.filter(player=player, status='Active').order_by('-date_reported')
+
     context = {
         'player': player,
         'latest_stats': latest_stats,
@@ -74,6 +96,9 @@ def analytics_dashboard(request, player_pk):
         'stats_json': stats_json,
         'overall_score': latest_stats.overall_score if latest_stats else None,
         'diffs': diffs,
+        'attendance_pct_30d': attendance_pct_30d,
+        'recent_feedback': recent_feedback,
+        'active_injuries': active_injuries,
     }
     return render(request, 'analytics/dashboard.html', context)
 

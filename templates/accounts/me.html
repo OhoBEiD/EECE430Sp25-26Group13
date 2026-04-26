@@ -19,6 +19,7 @@
         </div>
         {% if linked_player %}
         <a href="{% url 'player_detail' linked_player.pk %}" class="btn btn-primary">Open my player profile &rarr;</a>
+        <a href="{% url 'analytics_dashboard' linked_player.pk %}" class="btn btn-secondary" style="margin-left: 8px;">View my analytics &rarr;</a>
         {% endif %}
     </div>
 
@@ -36,7 +37,23 @@
             <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45);">Joined</div>
             <div style="font-size: 1rem; color: #fff; font-weight: 600;">{{ linked_player.date_joined|date:"M j, Y" }}</div>
         </div>
+        <div>
+            <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45);">Attendance</div>
+            <div style="font-size: 1rem; color: #fff; font-weight: 600;">{% if attendance_pct is not None %}{{ attendance_pct }}%{% else %}—{% endif %}</div>
+        </div>
     </div>
+    {% if own_lineups %}
+    <div style="margin-top: 20px;">
+        <h4 style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); margin-bottom: 8px;">Upcoming Starts</h4>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            {% for lineup in own_lineups %}
+            <span style="padding: 4px 10px; border-radius: 4px; background: rgba(0, 122, 255, 0.15); color: #8bb4f6; font-size: 0.75rem; border: 1px solid rgba(0, 122, 255, 0.3);">
+                Starting at {{ lineup.get_position_display }} vs {{ lineup.event.title }} ({{ lineup.event.date|date:"M j" }})
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     {% else %}
     <p style="margin-top: 16px; padding: 14px 16px; background: rgba(255,149,0,0.1); border: 1px solid rgba(255,149,0,0.25); border-radius: var(--radius-sm); color: rgba(255,255,255,0.7); font-size: 0.88rem;">Your account isn't linked to a player record yet — ask an admin to link you from <code>/admin-ui/users/</code> so this page can fill in your stats and team schedule.</p>
     {% endif %}

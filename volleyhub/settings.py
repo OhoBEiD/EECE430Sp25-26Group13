@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +44,10 @@ INSTALLED_APPS = [
     'teams.apps.TeamsConfig',
     'injuries.apps.InjuriesConfig',
     'accounts.apps.AccountsConfig',
+    'attendance.apps.AttendanceConfig',
+    'feedback.apps.FeedbackConfig',
+    'lineups.apps.LineupsConfig',
+    'chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +79,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'volleyhub.wsgi.application'
+ASGI_APPLICATION = 'volleyhub.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

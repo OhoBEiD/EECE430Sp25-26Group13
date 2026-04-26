@@ -147,10 +147,37 @@ class Command(BaseCommand):
             (teams[2], 'Receive & dig clinic', 'Practice', today + timedelta(days=2), time(16, 0), time(18, 0), 'Training Hall A', ''),
             (teams[2], 'Phoenix vs Jounieh Juniors', 'Game', today + timedelta(days=6), time(17, 0), time(19, 30), 'Jounieh Club Court', ''),
         ]
+        created_events = []
         for team, title, ev_type, d, st, et, loc, notes in events_spec:
-            Event.objects.create(team=team, title=title, event_type=ev_type,
-                                 date=d, start_time=st, end_time=et,
-                                 location=loc, notes=notes)
+            ev = Event.objects.create(team=team, title=title, event_type=ev_type,
+                                      date=d, start_time=st, end_time=et,
+                                      location=loc, notes=notes)
+            created_events.append(ev)
+
+        self.stdout.write('→ Creating attendance, feedback, and lineups…')
+        from attendance.models import Attendance
+        from feedback.models import Feedback
+        from lineups.models import LineupSlot
+        Attendance.objects.all().delete()
+        Feedback.objects.all().delete()
+        LineupSlot.objects.all().delete()
+
+        past_practice = created_events[0]
+        future_game = created_events[1]
+        coach_ahmad = users_by_name['coach_ahmad']
+
+        for p in teams[0].players.all():
+            status = 'present' if p.name != 'Hassan Abou Chacra' else 'excused'
+            Attendance.objects.create(event=past_practice, player=p, status=status, marked_by=coach_ahmad)
+
+        Feedback.objects.create(event=past_practice, player=players[0], coach=coach_ahmad, body='Great intensity during jump sets. Remember to use your legs more on the block.')
+        Feedback.objects.create(event=past_practice, player=players[1], coach=coach_ahmad, body='Heal up that ankle, and use the RICE method!')
+
+        LineupSlot.objects.create(event=future_game, position='SETTER', player=players[0])
+        LineupSlot.objects.create(event=future_game, position='OH1', player=players[1])
+        LineupSlot.objects.create(event=future_game, position='MB1', player=players[2])
+        LineupSlot.objects.create(event=future_game, position='LIBERO', player=players[3])
+        LineupSlot.objects.create(event=future_game, position='OPP', player=players[4])
 
         self.stdout.write('→ Creating injuries…')
         Injury.objects.create(
@@ -190,6 +217,25 @@ class Command(BaseCommand):
             reported_by='Coach Rami',
             medical_notes='Lower back strain. MRI scheduled. Out 3 weeks minimum.',
         )
+
+        self.stdout.write('→ Creating chat threads…')
+        from chat.models import ChatThread, ChatMessage
+        ChatThread.objects.all().delete()
+        for t in teams:
+            ChatThread.objects.create(name=f"{t.name} General", thread_type="team_general", team=t)
+            ChatThread.objects.create(name=f"{t.name} Staff Only", thread_type="team_staff", team=t)
+        for ev in created_events:
+            ChatThread.objects.create(name=f"Event: {ev.title}", thread_type="event", event=ev)
+        
+        blazers_gen = ChatThread.objects.get(name="Beirut Blazers General", thread_type="team_general")
+        ChatMessage.objects.create(thread=blazers_gen, sender=users_by_name['coach_ahmad'], text="Hey team, make sure to RSVP for the upcoming friendly!")
+        ChatMessage.objects.create(thread=blazers_gen, sender=users_by_name['player_omar'], text="Just submitted my RSVP coach. Thanks!")
+
+        self.stdout.write('→ Creating RSVPs…')
+        from attendance.models import EventRSVP
+        EventRSVP.objects.create(event=future_game, player=players[0], status='attending', reason='')
+        EventRSVP.objects.create(event=future_game, player=players[1], status='not_attending', reason='My ankle is still hurting.')
+
 
         self.stdout.write('→ Creating player stats…')
         # Record 3 stat lines for one captain per team — so analytics dashboard shows trends.

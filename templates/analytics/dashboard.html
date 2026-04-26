@@ -36,6 +36,51 @@
     </div>
 </div>
 
+<!-- Team Management Rollup -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
+    <!-- Attendance -->
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Attendance (30 days)</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #fff; line-height: 1;">{% if attendance_pct_30d is not None %}{{ attendance_pct_30d }}%{% else %}—{% endif %}</div>
+    </div>
+    
+    <!-- Injuries -->
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Active Injuries</div>
+        {% if active_injuries %}
+            <div style="color: #ff3b30; font-weight: 600;">{{ active_injuries|length }} reported</div>
+            {% for injury in active_injuries %}
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: 4px;">{{ injury.injury_type }}</div>
+            {% endfor %}
+        {% else %}
+            <div style="color: #34c759; font-weight: 600;">None</div>
+        {% endif %}
+    </div>
+
+    <!-- Strengths / Weaknesses Prototype -->
+    <div class="glass-card-dark" style="padding: 24px; grid-column: span 2;">
+        <div style="font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Strengths & Weaknesses (AI Insights)</div>
+        <div style="display: flex; gap: 24px; font-size: 0.85rem;">
+            <div><span style="color: #34c759; font-weight: 600;">Strength:</span> Excellent court vision reading the block.</div>
+            <div><span style="color: #ff9500; font-weight: 600;">Focus Area:</span> Transition speed to defend deep angles.</div>
+        </div>
+    </div>
+</div>
+
+{% if recent_feedback %}
+<div class="glass-card-dark" style="padding: 24px; margin-bottom: 24px;">
+    <div style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.7); margin-bottom: 12px; text-transform: uppercase;">Recent Coach Feedback</div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        {% for fb in recent_feedback %}
+        <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 4px;">{{ fb.event.title }} &middot; {{ fb.created_at|date:"M j, Y" }}</div>
+            <div style="font-size: 0.9rem; color: #fff;">{{ fb.body }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 {% if not latest_stats %}
 <!-- Empty State -->
 <div class="glass-card-dark" style="text-align: center; padding: 80px 32px;">

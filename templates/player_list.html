@@ -231,7 +231,7 @@
                 </td>
                 <td style="color: rgba(255,255,255,0.55);">{{ player.date_joined }}</td>
                 <td><span class="badge-position">{{ player.position }}</span></td>
-                <td style="font-variant-numeric: tabular-nums; font-weight: 500;">{% if is_visitor or is_scout %}—{% else %}${{ player.salary }}{% endif %}</td>
+                <td style="font-variant-numeric: tabular-nums; font-weight: 500;">{% if is_visitor or is_scout or is_player and player != linked_player %}—{% else %}${{ player.salary }}{% endif %}</td>
                 <td style="color: rgba(255,255,255,0.55);">{% if is_visitor or is_scout %}—{% else %}{{ player.contact_person }}{% endif %}</td>
                 <td>
                     <div class="actions">

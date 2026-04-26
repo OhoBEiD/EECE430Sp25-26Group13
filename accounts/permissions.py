@@ -1,4 +1,6 @@
 """Pure-Python predicates for role-based access checks.
+from django.utils import timezone
+from datetime import timedelta
 
 Used by views (in conditionals), decorators (in dispatch), querysets
 (in filters), and template tags (in `{% can_edit_* %}`). Always safe
@@ -72,4 +74,40 @@ def can_view_injury(user, injury):
         return _coach_owns_player(user, injury.player)
     if role == Role.PLAYER:
         return _is_self_player(user, injury.player)
+    return False
+
+
+def can_view_feedback(user, feedback):
+    if not user.is_authenticated:
+        return False
+    role = role_of(user)
+    if role in (Role.MANAGER, Role.ADMIN):
+        return True
+    if role == Role.COACH:
+        return feedback.coach_id == user.id or _coach_owns_player(user, feedback.player)
+    if role == Role.PLAYER:
+        return _is_self_player(user, feedback.player)
+    return False
+
+def can_edit_feedback(user, feedback):
+    if not user.is_authenticated:
+        return False
+    role = role_of(user)
+    if role in (Role.MANAGER, Role.ADMIN):
+        return True
+    if role == Role.COACH:
+        if feedback.coach_id == user.id:
+            now = timezone.now()
+            if now <= feedback.created_at + timedelta(hours=24):
+                return True
+    return False
+
+def can_delete_feedback(user, feedback):
+    if not user.is_authenticated:
+        return False
+    role = role_of(user)
+    if role in (Role.MANAGER, Role.ADMIN):
+        return True
+    if role == Role.COACH:
+        return feedback.coach_id == user.id
     return False

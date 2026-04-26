@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load role_tags %}
+
+{% block content %}
+<div class="page-header" style="margin-bottom: 30px;">
+    <h2>{{ event.title }}</h2>
+    <p class="subtitle">{{ event.event_type }} &middot; {{ event.date|date:"F j, Y" }} &middot; {{ event.start_time|time:"g:i A" }}</p>
+</div>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px;">
+        <div class="glass-card" style="margin-bottom: 24px;">
+            <h3>Overview</h3>
+            <p><strong>Team:</strong> <a href="{% url 'team_detail' team.pk %}">{{ team.name }}</a></p>
+            <p><strong>Location:</strong> {{ event.location|default:"—" }}</p>
+            {% if event.notes %}
+            <p><strong>Notes:</strong> {{ event.notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if is_player %}
+<div class="glass-card" style="margin-bottom: 24px;">
+    <h3>My RSVP</h3>
+    <form method="post" action="{% url 'rsvp_submit' event.pk %}">
+        {% csrf_token %}
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <select name="status" style="padding: 10px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);" required>
+                <option value="" style="color: #000;">-- Select Status --</option>
+                <option value="attending" style="color: #000;" {% if player_rsvp.status == 'attending' %}selected{% endif %}>Attending</option>
+                <option value="not_attending" style="color: #000;" {% if player_rsvp.status == 'not_attending' %}selected{% endif %}>Not Attending</option>
+                <option value="maybe" style="color: #000;" {% if player_rsvp.status == 'maybe' %}selected{% endif %}>Maybe</option>
+            </select>
+            <input type="text" name="reason" value="{{ player_rsvp.reason }}" placeholder="Reason (Optional)" style="padding: 10px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 200px;">
+            <button type="submit" class="btn btn-primary">Update RSVP</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% can_edit_team team as can_edit %}
+{% if can_edit %}
+<div class="glass-card" style="margin-bottom: 24px;">
+    <h3>Attendance</h3>
+    <form method="post" action="{% url 'attendance_submit' event.pk %}">
+        {% csrf_token %}
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="padding: 8px;">Player</th>
+                    <th style="padding: 8px;">Status</th>
+                    <th style="padding: 8px;">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td style="padding: 8px;">{{ player.name }}</td>
+                    <td style="padding: 8px;">
+                        <select name="status_{{ player.pk }}" style="width: 100%; padding: 6px; border-radius: 4px;">
+                            <option value="">-- Select --</option>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="late">Late</option>
+                            <option value="excused">Excused</option>
+                        </select>
+                    </td>
+                    <td style="padding: 8px;">
+                        <input type="text" name="notes_{{ player.pk }}" placeholder="Optional note" style="width: 100%; padding: 6px; border-radius: 4px;">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary">Save Attendance</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% if event.event_type == 'Game' or event.event_type == 'Tournament' %}
+<div class="glass-card" style="margin-bottom: 24px;">
+    <h3>Starting Lineup</h3>
+    <form method="post" action="{% url 'lineup_submit' event.pk %}">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+            {% for item in lineup_data %}
+            <div>
+                <label style="display: block; margin-bottom: 4px; font-size: 0.85rem; color: rgba(255,255,255,0.7);">{{ item.pos_label }}</label>
+                {% if can_edit %}
+                <select name="lineup_{{ item.pos_code }}" style="width: 100%; padding: 6px; border-radius: 4px;">
+                    <option value="">-- Unassigned --</option>
+                    {% for player in players %}
+                        <option value="{{ player.pk }}" {% if item.assigned_player_id == player.pk %}selected{% endif %}>{{ player.name }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                    <div style="padding: 6px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                        {% for player in players %}
+                            {% if item.assigned_player_id == player.pk %}{{ player.name }}{% endif %}
+                        {% endfor %}
+                        {% if not item.assigned_player_id %}-- Unassigned --{% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% if can_edit %}
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary">Save Lineup</button>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endif %}
+
+{% can_edit_team team as can_edit %}
+{% if can_edit %}
+<div class="glass-card" style="margin-bottom: 24px;">
+    <h3>Coach Feedback</h3>
+    <form method="post" action="{% url 'feedback_submit' event.pk %}">
+        {% csrf_token %}
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="padding: 8px;">Player</th>
+                    <th style="padding: 8px;">Private Feedback Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td style="padding: 8px; vertical-align: top;">{{ player.name }}</td>
+                    <td style="padding: 8px;">
+                        <textarea name="feedback_body_{{ player.pk }}" placeholder="Write feedback here..." style="width: 100%; height: 60px; padding: 6px; border-radius: 4px; resize: vertical;"></textarea>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary">Save Feedback</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div style="margin-top: 24px;">
+    <a href="{% url 'team_detail' team.pk %}" class="btn btn-secondary">Back to Team</a>
+</div>
+
+{% endblock %}
