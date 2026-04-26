@@ -2,9 +2,11 @@
 Seed the VolleyHub database with realistic demo data for the lab demo.
 
 Creates:
-- 3 user accounts (manager_sara, coach_ahmad, scout_layla) — all with password `demo12345`
+- 6 user accounts across all roles (visitor is implicit / not seeded):
+    player_omar, coach_ahmad, manager_sara, scout_layla, admin_volleyhub
+    All passwords are `demo12345`.
 - 3 teams across different age groups
-- 15 players distributed across the teams
+- 15 players distributed across the teams (player_omar is linked to players[0])
 - 6 events (past, today, next few days, next week)
 - 4 injuries (2 active, 1 recovering, 1 cleared)
 - 3 sets of player stats per team captain
@@ -26,12 +28,17 @@ from players.models import VolleyPlayer
 from teams.models import Team, Event
 from injuries.models import Injury
 from analytics.models import PlayerStats
+from accounts.models import UserProfile
+from accounts.roles import Role
 
 
+# (username, first, last, email, role)
 DEMO_USERS = [
-    ('manager_sara', 'Sara', 'Mansour', 'manager@volleyhub.demo'),
-    ('coach_ahmad', 'Ahmad', 'Khoury', 'coach@volleyhub.demo'),
-    ('scout_layla', 'Layla', 'Haddad', 'scout@volleyhub.demo'),
+    ('player_omar',     'Omar',  'Tannous',  'omar@volleyhub.demo',    Role.PLAYER),
+    ('coach_ahmad',     'Ahmad', 'Khoury',   'coach@volleyhub.demo',   Role.COACH),
+    ('manager_sara',    'Sara',  'Mansour',  'manager@volleyhub.demo', Role.MANAGER),
+    ('scout_layla',     'Layla', 'Haddad',   'scout@volleyhub.demo',   Role.SCOUT),
+    ('admin_volleyhub', 'Admin', 'VolleyHub', 'admin@volleyhub.demo',  Role.ADMIN),
 ]
 DEMO_PASSWORD = 'demo12345'
 
@@ -84,13 +91,25 @@ class Command(BaseCommand):
         User.objects.filter(username__in=[u[0] for u in DEMO_USERS]).delete()
 
         self.stdout.write('→ Creating demo users…')
-        for username, first, last, email in DEMO_USERS:
-            u = User.objects.create_user(
-                username=username, email=email,
-                first_name=first, last_name=last,
-                password=DEMO_PASSWORD,
+        users_by_name = {}
+        for username, first, last, email, role in DEMO_USERS:
+            is_admin = role == Role.ADMIN
+            if is_admin:
+                u = User.objects.create_superuser(
+                    username=username, email=email, password=DEMO_PASSWORD,
+                    first_name=first, last_name=last,
+                )
+            else:
+                u = User.objects.create_user(
+                    username=username, email=email,
+                    first_name=first, last_name=last,
+                    password=DEMO_PASSWORD,
+                )
+            UserProfile.objects.update_or_create(
+                user=u, defaults={'role': role},
             )
-            self.stdout.write(f'  • {u.username} / {DEMO_PASSWORD}')
+            users_by_name[username] = u
+            self.stdout.write(f'  • {u.username:20s} role={role:8s} / {DEMO_PASSWORD}')
 
         self.stdout.write('→ Creating teams…')
         teams = [Team.objects.create(**t) for t in DEMO_TEAMS]
@@ -109,6 +128,11 @@ class Command(BaseCommand):
                 photo=f'players/portraits/p{i + 1}.jpg',
             )
             players.append(p)
+
+        self.stdout.write('→ Linking player_omar → Omar Tannous (Beirut Blazers)…')
+        omar_profile = users_by_name['player_omar'].profile
+        omar_profile.linked_player = players[0]
+        omar_profile.save()
 
         self.stdout.write('→ Creating events…')
         events_spec = [
@@ -182,4 +206,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f'\n✓ Seeded. Users: {", ".join(u[0] for u in DEMO_USERS)} (password: {DEMO_PASSWORD})'
+        ))
+        self.stdout.write(self.style.SUCCESS(
+            'Visitor role is implicit — just open the site without signing in.'
         ))
