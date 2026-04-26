@@ -1,17 +1,33 @@
 from django import forms
-from .models import Team, Event
+from django.contrib.auth.models import User
+
+from accounts.roles import Role
+
+from .models import Event, Team
 
 
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ['name', 'age_group', 'coach_name', 'description']
+        fields = ['name', 'age_group', 'coach', 'coach_name', 'description']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'age_group': forms.Select(attrs={'class': 'form-control'}),
-            'coach_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'coach': forms.Select(attrs={'class': 'form-control'}),
+            'coach_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Optional legacy label'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
         }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['coach'].queryset = User.objects.filter(profile__role=Role.COACH).order_by('username')
+        self.fields['coach'].required = False
+        self.fields['coach'].empty_label = '— Unassigned —'
+        self.fields['coach_name'].required = False
+        # Coach (when editing their own team) can adjust description / coach_name but
+        # not reassign the coach FK or the team identity.
+        if user is not None and not (user.is_superuser or getattr(user, 'profile', None) and user.profile.role in (Role.MANAGER, Role.ADMIN)):
+            self.fields['coach'].disabled = True
 
 
 class EventForm(forms.ModelForm):

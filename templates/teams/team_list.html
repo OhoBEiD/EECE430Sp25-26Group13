@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load role_tags %}
 
 {% block content %}
 <!-- Floating VolleyHub Label -->
@@ -91,6 +92,7 @@
             ">Manage your volleyball teams — set age groups, assign coaches, and add events.</p>
 
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                {% if is_manager or is_admin %}
                 <a href="{% url 'team_create' %}" style="
                     display: inline-flex;
                     align-items: center;
@@ -110,6 +112,7 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     Create Team
                 </a>
+                {% endif %}
 
                 <a href="{% url 'schedule_view' %}" style="
                     display: inline-flex;
@@ -174,13 +177,18 @@
             <tr>
                 <td><a href="{% url 'team_detail' team.pk %}">{{ team.name }}</a></td>
                 <td><span class="badge-position">{{ team.get_age_group_display }}</span></td>
-                <td style="color: rgba(255,255,255,0.55);">{{ team.coach_name }}</td>
+                <td style="color: rgba(255,255,255,0.55);">{% if team.coach %}{{ team.coach.get_full_name|default:team.coach.username }}{% else %}{{ team.coach_name|default:"—" }}{% endif %}</td>
                 <td style="font-variant-numeric: tabular-nums; font-weight: 500;">{{ team.player_count }}</td>
                 <td>
                     <div class="actions">
                         <a href="{% url 'team_detail' team.pk %}" class="btn btn-primary">View</a>
+                        {% can_edit_team team as can_edit %}
+                        {% if can_edit %}
                         <a href="{% url 'team_edit' team.pk %}" class="btn btn-warning">Edit</a>
+                        {% endif %}
+                        {% if is_manager or is_admin %}
                         <a href="{% url 'team_delete' team.pk %}" class="btn btn-danger">Delete</a>
+                        {% endif %}
                     </div>
                 </td>
             </tr>
@@ -192,11 +200,13 @@
 <div class="glass-card">
     <div class="empty-state">
         <div class="empty-icon">&#127951;</div>
-        <p>No teams created yet.</p>
+        <p>No teams visible to your role.</p>
+        {% if is_manager or is_admin %}
         <a href="{% url 'team_create' %}" class="btn btn-success btn-lg">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Create First Team
         </a>
+        {% endif %}
     </div>
 </div>
 {% endif %}
