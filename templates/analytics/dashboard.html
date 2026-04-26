@@ -14,26 +14,19 @@
     </div>
 </div>
 
-<!-- Page Header -->
-<div class="page-header">
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-        <div>
-            <h2>{{ player.name }} &mdash; Performance Analytics</h2>
-            <p class="subtitle">AI-powered performance tracking and skill analysis</p>
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="{% url 'analytics_select' %}" class="btn btn-secondary btn-lg">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-                All Players
-            </a>
-            {% if is_coach or is_manager or is_admin %}
-            <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Record Stats
-            </a>
-            {% endif %}
-        </div>
-    </div>
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1759489036027-44eac680741a?w=1600&h=686&fit=crop' eyebrow='📊 Performance analytics' title=player.name|add:' — Analytics' subtitle='AI-powered performance tracking and skill analysis' %}
+
+<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;">
+    <a href="{% url 'analytics_select' %}" class="btn btn-secondary btn-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        All Players
+    </a>
+    {% if is_coach or is_manager or is_admin %}
+    <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Record Stats
+    </a>
+    {% endif %}
 </div>
 
 <!-- Team Management Rollup -->

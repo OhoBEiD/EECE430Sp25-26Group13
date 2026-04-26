@@ -1,0 +1,12 @@
+{% comment %}
+Reusable page banner with background image, eyebrow, title, subtitle.
+Inputs: image_url (required), eyebrow (optional), title (required), subtitle (optional), aspect (default "21/9").
+{% endcomment %}
+<div style="position: relative; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; aspect-ratio: {{ aspect|default:'21/9' }}; background: linear-gradient(135deg, rgba(28,28,30,0.55), rgba(58,58,60,0.4)), url('{{ image_url }}') center/cover no-repeat; animation: fadeUp 0.6s ease-out both;">
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.7) 100%);"></div>
+    <div style="position: absolute; left: 32px; bottom: 24px; right: 32px; z-index: 1;">
+        {% if eyebrow %}<div style="display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.18); margin-bottom: 10px;">{{ eyebrow }}</div>{% endif %}
+        <h2 style="font-size: 2rem; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.02em;">{{ title }}</h2>
+        {% if subtitle %}<p style="font-size: 0.95rem; color: rgba(255,255,255,0.78); margin: 4px 0 0; max-width: 640px;">{{ subtitle }}</p>{% endif %}
+    </div>
+</div>

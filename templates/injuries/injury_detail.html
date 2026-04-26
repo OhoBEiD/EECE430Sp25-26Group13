@@ -2,10 +2,7 @@
 {% load role_tags %}
 
 {% block content %}
-<div class="page-header">
-    <h2>{{ injury.player.name }} &mdash; {{ injury.injury_type }}</h2>
-    <p class="subtitle">Injury report and recovery details</p>
-</div>
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1664956617201-983700bacfea?w=1600&h=686&fit=crop' eyebrow='Injury report' title=injury.player.name|add:' — '|add:injury.injury_type subtitle='Recovery details and medical history' %}
 
 <div class="glass-card-dark">
     <div class="stagger">

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'dashboard/_hero.html' with eyebrow="⚙ Admin console" title="Welcome back, "|add:user.username subtitle="You have manager-level club access plus role assignment and full Django admin." %}
+{% include 'dashboard/_hero.html' with eyebrow="⚙ Admin console" title="Welcome back, "|add:user.username subtitle="You have manager-level club access plus role assignment and full Django admin." hero_image="https://images.unsplash.com/photo-1479859546309-cd77fa21c8f6?w=1600&h=500&fit=crop" %}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
     <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">

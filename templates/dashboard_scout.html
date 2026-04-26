@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'dashboard/_hero.html' with eyebrow="🔭 Scout view" title="Welcome back, "|add:user.username subtitle="Read-only access to rosters, teams, and analytics across the club. Personal injury notes are redacted." %}
+{% include 'dashboard/_hero.html' with eyebrow="🔭 Scout view" title="Welcome back, "|add:user.username subtitle="Read-only access to rosters, teams, and analytics across the club. Personal injury notes are redacted." hero_image="https://images.unsplash.com/photo-1759489036027-44eac680741a?w=1600&h=500&fit=crop" %}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
     <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">

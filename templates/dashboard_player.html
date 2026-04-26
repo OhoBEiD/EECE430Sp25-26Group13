@@ -2,9 +2,9 @@
 
 {% block content %}
 {% if linked_player %}
-    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:linked_player.name subtitle="Your team schedule, your injury history, and your most recent stat lines — all in one place." %}
+    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:linked_player.name subtitle="Your team schedule, your injury history, and your most recent stat lines — all in one place." hero_image="https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=1600&h=500&fit=crop" %}
 {% else %}
-    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:user.username subtitle="Your account isn't linked to a player record yet — ask a manager to link you so your dashboard fills in." %}
+    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:user.username subtitle="Your account isn't linked to a player record yet — ask a manager to link you so your dashboard fills in." hero_image="https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=1600&h=500&fit=crop" %}
 {% endif %}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
@@ -28,6 +28,8 @@
         <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Practice &amp; games on your team</div>
     </div>
 </div>
+
+{% include 'notifications/_panel.html' %}
 
 <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Your team's upcoming events</h3>
 {% include 'dashboard/_events_table.html' with events=own_events empty_text="No team events in the next 7 days." %}

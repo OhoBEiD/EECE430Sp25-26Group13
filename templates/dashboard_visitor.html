@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'dashboard/_hero.html' with eyebrow="🏐 Welcome" title="Welcome to VolleyHub" subtitle="Browse the public roster, teams, and upcoming events. Sign in to access player stats, injuries, and management tools." %}
+{% include 'dashboard/_hero.html' with eyebrow="🏐 Welcome" title="Welcome to VolleyHub" subtitle="Browse the public roster, teams, and upcoming events. Sign in to access player stats, injuries, and management tools." hero_image="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=1600&h=500&fit=crop" %}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
     <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
@@ -28,4 +28,8 @@
 
 <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Upcoming events</h3>
 {% include 'dashboard/_events_table.html' %}
+
+{% include 'dashboard/_featured_videos.html' %}
+
+{% include 'dashboard/_gallery.html' %}
 {% endblock %}

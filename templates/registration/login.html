@@ -14,10 +14,7 @@
     </div>
 </div>
 
-<div class="page-header">
-    <h2>Sign in</h2>
-    <p class="subtitle">Enter your credentials to manage the club.</p>
-</div>
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=1600&h=500&fit=crop' eyebrow='🏐 VolleyHub' title='Sign in' subtitle='Enter your credentials to manage your team, players, and events.' aspect='16/5' %}
 
 <div class="glass-card-dark" style="max-width: 440px; margin: 0 auto;">
     {% if form.non_field_errors %}

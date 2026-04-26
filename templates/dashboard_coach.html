@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'dashboard/_hero.html' with eyebrow="🏐 Coach console" title="Welcome back, coach" subtitle="A focused view of the teams you run — rosters, open injuries, and the next few sessions on the calendar." %}
+{% include 'dashboard/_hero.html' with eyebrow="🏐 Coach console" title="Welcome back, coach" subtitle="A focused view of the teams you run — rosters, open injuries, and the next few sessions on the calendar." hero_image="https://images.unsplash.com/photo-1666901356149-93f2eb3ba5a2?w=1600&h=500&fit=crop" %}
+
+{% include 'notifications/_panel.html' %}
 
 {% if team_summaries %}
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
@@ -50,4 +52,20 @@
     </div>
 </div>
 {% endif %}
+
+<div style="margin-top: 8px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">Coach's corner</h3>
+        <a href="https://www.theartofcoachingvolleyball.com" target="_blank" rel="noopener" style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.9); text-decoration: none;">Art of Coaching Volleyball &rarr;</a>
+    </div>
+    <div class="glass-card-dark" style="padding: 0; overflow: hidden; max-width: 720px;">
+        <div style="position: relative; padding-bottom: 56.25%; height: 0;">
+            <iframe src="https://www.youtube-nocookie.com/embed/lEkr3qgIDlI" title="How to set a volleyball — fundamentals 2.0" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"></iframe>
+        </div>
+        <div style="padding: 14px 18px;">
+            <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(94, 222, 160, 0.9); margin-bottom: 4px;">Today's drill focus</div>
+            <div style="font-size: 0.95rem; font-weight: 600; color: #fff;">Setting fundamentals — hand position, stance, footwork</div>
+        </div>
+    </div>
+</div>
 {% endblock %}

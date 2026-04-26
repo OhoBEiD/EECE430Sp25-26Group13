@@ -10,6 +10,8 @@
     </div>
 </div>
 
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1479859546309-cd77fa21c8f6?w=1600&h=686&fit=crop' eyebrow='⚙ Edit user' title=user_obj.username subtitle='Change role and link this account to a player record.' %}
+
 <div class="glass-card-dark" style="padding: 32px;">
     <h2 style="font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0 0 8px;">{{ user_obj.username }}{% if user_obj.is_superuser %} <span style="margin-left:8px; padding: 2px 8px; border-radius: 100px; font-size: 0.62rem; font-weight: 600; text-transform: uppercase; background: rgba(255, 215, 0, 0.18); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.35);">super</span>{% endif %}</h2>
     <p style="margin: 0 0 24px; color: rgba(255,255,255,0.55); font-size: 0.88rem;">{{ user_obj.get_full_name|default:"No name on file" }} · {{ user_obj.email|default:"no email" }}</p>

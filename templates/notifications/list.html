@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=1600&h=500&fit=crop' eyebrow='🔔 Notifications' title='Your inbox' subtitle='Event updates, RSVP reminders, and club announcements.' aspect='16/5' %}
+
+<div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+    <p class="subtitle" style="margin: 0;">{{ notes|length }} notification{{ notes|length|pluralize }} · {{ unread_notification_count }} unread</p>
+    {% if unread_notification_count %}
+    <form method="post" action="{% url 'notification_mark_all_read' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">Mark all read</button>
+    </form>
+    {% endif %}
+</div>
+
+{% if notes %}
+<div class="stagger" style="display: flex; flex-direction: column; gap: 10px;">
+    {% for n in notes %}
+    <div class="glass-card-dark" style="padding: 16px 20px; {% if not n.read %}border-left: 3px solid #5856d6;{% endif %} display: flex; align-items: flex-start; gap: 16px;">
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 100px; background: rgba(88,86,214,0.18); color: rgba(175,173,255,0.95); border: 1px solid rgba(88,86,214,0.3);">{{ n.get_kind_display }}</span>
+                {% if not n.read %}<span style="font-size: 0.62rem; font-weight: 600; color: #5edea0;">● new</span>{% endif %}
+                <span style="color: rgba(255,255,255,0.4); font-size: 0.78rem;">{{ n.created_at|date:"M j, g:i A" }}</span>
+            </div>
+            <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">{{ n.title }}</div>
+            {% if n.body %}<p style="margin: 0; font-size: 0.88rem; color: rgba(255,255,255,0.7);">{{ n.body }}</p>{% endif %}
+        </div>
+        {% if n.link %}
+        <form method="post" action="{% url 'notification_mark_read' n.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Open</button>
+        </form>
+        {% elif not n.read %}
+        <form method="post" action="{% url 'notification_mark_read' n.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Mark read</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card">
+    <div class="empty-state">
+        <div class="empty-icon">🔕</div>
+        <p>You're all caught up — no notifications yet.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

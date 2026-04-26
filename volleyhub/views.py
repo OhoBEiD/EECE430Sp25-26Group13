@@ -61,6 +61,14 @@ def _dashboard_player(request, today, horizon):
     if linked is not None:
         events_qs = Event.objects.filter(team_id=linked.team_id) if linked.team_id else Event.objects.none()
         own_events = _upcoming(events_qs, today, horizon)
+        if own_events:
+            from attendance.models import EventRSVP
+            rsvp_map = {
+                r.event_id: r.status
+                for r in EventRSVP.objects.filter(player_id=linked.pk, event_id__in=[e.pk for e in own_events])
+            }
+            for ev in own_events:
+                ev.current_rsvp_status = rsvp_map.get(ev.pk)
         own_injuries = list(injuries_for(request.user).order_by('-date_reported'))
         open_injury_count = sum(1 for i in own_injuries if i.status != 'Cleared')
         recent_stats = list(stats_for(request.user).order_by('-date_recorded')[:3])

@@ -15,5 +15,6 @@ urlpatterns = [
     path('', include('feedback.urls')),
     path('', include('lineups.urls')),
     path('chat/', include('chat.urls')),
+    path('notifications/', include('notifications.urls')),
     path('', views.dashboard, name='dashboard'),
 ]

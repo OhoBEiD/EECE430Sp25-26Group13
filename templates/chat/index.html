@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="page-header" style="margin-bottom: 30px;">
-    <h2>Communications</h2>
-    <p class="subtitle">Join team and event discussion boards</p>
-</div>
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1666901356149-93f2eb3ba5a2?w=1600&h=686&fit=crop' eyebrow='💬 Communications' title='Channels' subtitle='Team and event discussion boards — pick a thread to jump in.' %}
 
 <div class="stagger">
     {% for thread in threads %}

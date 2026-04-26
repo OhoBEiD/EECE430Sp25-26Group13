@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% include 'dashboard/_hero.html' with eyebrow="🏐 Manager dashboard" title="Welcome back, "|add:user.username subtitle="Your club at a glance — players on the roster, teams competing, injuries being managed, and events on the horizon." %}
+{% include 'dashboard/_hero.html' with eyebrow="🏐 Manager dashboard" title="Welcome back, "|add:user.username subtitle="Your club at a glance — players on the roster, teams competing, injuries being managed, and events on the horizon." hero_image="https://images.unsplash.com/photo-1572454181157-0b40dd7667fe?w=1600&h=500&fit=crop" %}
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
     <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">

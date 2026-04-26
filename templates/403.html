@@ -10,9 +10,9 @@
     </div>
 </div>
 
-<div style="text-align: center; padding: 60px 20px;">
-    <div style="font-size: 4rem; margin-bottom: 16px;">🚫</div>
-    <h1 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">You don't have access to that page</h1>
+{% include '_page_banner.html' with image_url='https://plus.unsplash.com/premium_photo-1661963404614-74802f16a7a0?w=1600&h=500&fit=crop' eyebrow='🚫 Forbidden' title='You don't have access to that page' subtitle='Ask an admin to update your role if you believe this is wrong.' aspect='16/5' %}
+
+<div style="text-align: center; padding: 32px 20px;">
     <p style="color: rgba(255,255,255,0.6); max-width: 480px; margin: 0 auto 24px;">
         Your current role ({{ user_role|default:"visitor" }}) doesn't include this action. If you believe this is wrong, ask an admin to update your role from the Django admin user list.
     </p>

@@ -1,5 +1,6 @@
 {% comment %}
 Shared upcoming-events table. Inputs: events (iterable), empty_text (str).
+Each event may carry `current_rsvp_status` (set in the view) — if so, RSVP buttons render.
 {% endcomment %}
 {% if events %}
 <div class="glass-table-wrapper">
@@ -10,6 +11,7 @@ Shared upcoming-events table. Inputs: events (iterable), empty_text (str).
                 <th>Team</th>
                 <th>When</th>
                 <th>Location</th>
+                {% if linked_player %}<th>Your RSVP</th>{% endif %}
             </tr>
         </thead>
         <tbody class="stagger">
@@ -32,7 +34,7 @@ Shared upcoming-events table. Inputs: events (iterable), empty_text (str).
                             background: rgba(52, 199, 89, 0.15); color: #5edea0; border: 1px solid rgba(52, 199, 89, 0.25);
                             {% endif %}
                         ">{{ event.event_type }}</span>
-                        <strong style="color: #fff; font-weight: 600;">{{ event.title }}</strong>
+                        <a href="{% url 'event_detail' event.pk %}" style="color: #fff; font-weight: 600; text-decoration: none;">{{ event.title }}</a>
                     </div>
                 </td>
                 <td><a href="{% url 'team_detail' event.team.pk %}">{{ event.team.name }}</a></td>
@@ -40,6 +42,20 @@ Shared upcoming-events table. Inputs: events (iterable), empty_text (str).
                     {{ event.date|date:"D, M j" }} &middot; {{ event.start_time|time:"g:i A" }}
                 </td>
                 <td style="color: rgba(255,255,255,0.55);">{{ event.location }}</td>
+                {% if linked_player %}
+                <td>
+                    {% if linked_player.team_id == event.team_id %}
+                    <form method="post" action="{% url 'rsvp_submit' event.pk %}" style="display: flex; gap: 4px; flex-wrap: wrap;">
+                        {% csrf_token %}
+                        <button type="submit" name="status" value="attending" title="Approve" style="padding: 4px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(52,199,89,0.35); {% if event.current_rsvp_status == 'attending' %}background: #5edea0; color: #1c1c1e;{% else %}background: rgba(52,199,89,0.12); color: #5edea0;{% endif %}">✓ Approve</button>
+                        <button type="submit" name="status" value="maybe" title="Maybe" style="padding: 4px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,179,64,0.35); {% if event.current_rsvp_status == 'maybe' %}background: #ffb340; color: #1c1c1e;{% else %}background: rgba(255,179,64,0.12); color: #ffb340;{% endif %}">? Maybe</button>
+                        <button type="submit" name="status" value="not_attending" title="Reject" style="padding: 4px 10px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,107,107,0.35); {% if event.current_rsvp_status == 'not_attending' %}background: #ff6b6b; color: #1c1c1e;{% else %}background: rgba(255,107,107,0.12); color: #ff6b6b;{% endif %}">✗ Reject</button>
+                    </form>
+                    {% else %}
+                    <span style="color: rgba(255,255,255,0.3); font-size: 0.78rem;">—</span>
+                    {% endif %}
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

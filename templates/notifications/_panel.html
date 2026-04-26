@@ -1,0 +1,32 @@
+{% comment %}
+Compact notifications panel for embedding on dashboards.
+Reads request.user.notifications directly — no view changes needed.
+{% endcomment %}
+{% if user.is_authenticated %}
+<div style="margin-bottom: 32px;">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">🔔 Notifications {% if unread_notification_count %}<span style="font-size: 0.7rem; padding: 2px 8px; border-radius: 100px; background: #5856d6; color: #fff; margin-left: 6px; vertical-align: middle;">{{ unread_notification_count }}</span>{% endif %}</h3>
+        <a href="{% url 'notification_list' %}" style="font-size: 0.78rem; color: rgba(175,173,255,0.9); text-decoration: none;">View all &rarr;</a>
+    </div>
+    {% with recent=user.notifications.all|slice:":3" %}
+    {% if recent %}
+    <div class="stagger" style="display: flex; flex-direction: column; gap: 8px;">
+        {% for n in recent %}
+        <div class="glass-card-dark" style="padding: 14px 18px; {% if not n.read %}border-left: 3px solid #5856d6;{% endif %}">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                <span style="font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 100px; background: rgba(88,86,214,0.18); color: rgba(175,173,255,0.95);">{{ n.get_kind_display }}</span>
+                <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">{{ n.created_at|timesince }} ago</span>
+            </div>
+            <div style="font-size: 0.92rem; color: #fff; font-weight: 500;">
+                {% if n.link %}<a href="{{ n.link }}" style="color: #fff; text-decoration: none;">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}
+            </div>
+            {% if n.body %}<p style="margin: 4px 0 0; font-size: 0.82rem; color: rgba(255,255,255,0.6);">{{ n.body|truncatechars:140 }}</p>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass-card-dark" style="padding: 16px 20px; color: rgba(255,255,255,0.5); font-size: 0.88rem;">No notifications yet — you'll get one when a new event is posted on your team.</div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endif %}

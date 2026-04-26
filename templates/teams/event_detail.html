@@ -2,10 +2,13 @@
 {% load role_tags %}
 
 {% block content %}
-<div class="page-header" style="margin-bottom: 30px;">
-    <h2>{{ event.title }}</h2>
-    <p class="subtitle">{{ event.event_type }} &middot; {{ event.date|date:"F j, Y" }} &middot; {{ event.start_time|time:"g:i A" }}</p>
-</div>
+{% if event.event_type == 'Game' %}
+    {% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=1600&h=686&fit=crop' eyebrow=event.event_type title=event.title subtitle=event.date|date:"l, F j, Y"|add:" · "|add:event.location %}
+{% elif event.event_type == 'Tournament' %}
+    {% include '_page_banner.html' with image_url='https://plus.unsplash.com/premium_photo-1661963404614-74802f16a7a0?w=1600&h=686&fit=crop' eyebrow=event.event_type title=event.title subtitle=event.date|date:"l, F j, Y"|add:" · "|add:event.location %}
+{% else %}
+    {% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1666901356149-93f2eb3ba5a2?w=1600&h=686&fit=crop' eyebrow=event.event_type title=event.title subtitle=event.date|date:"l, F j, Y"|add:" · "|add:event.location %}
+{% endif %}
 
 <div style="display: flex; gap: 20px; flex-wrap: wrap;">
     <div style="flex: 1; min-width: 300px;">
@@ -21,20 +24,25 @@
 </div>
 
 {% if is_player %}
-<div class="glass-card" style="margin-bottom: 24px;">
-    <h3>My RSVP</h3>
-    <form method="post" action="{% url 'rsvp_submit' event.pk %}">
+<div class="glass-card-dark" style="margin-bottom: 24px;">
+    <h3 style="margin-top: 0; color: #fff;">My RSVP</h3>
+    {% if player_rsvp %}
+    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0 0 16px;">Currently:
+        <strong style="color: {% if player_rsvp.status == 'attending' %}#5edea0{% elif player_rsvp.status == 'maybe' %}#ffb340{% else %}#ff6b6b{% endif %};">{{ player_rsvp.get_status_display }}</strong>
+    </p>
+    {% else %}
+    <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin: 0 0 16px;">You haven't responded yet — pick one below.</p>
+    {% endif %}
+    <form method="post" action="{% url 'rsvp_submit' event.pk %}" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
         {% csrf_token %}
-        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-            <select name="status" style="padding: 10px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);" required>
-                <option value="" style="color: #000;">-- Select Status --</option>
-                <option value="attending" style="color: #000;" {% if player_rsvp.status == 'attending' %}selected{% endif %}>Attending</option>
-                <option value="not_attending" style="color: #000;" {% if player_rsvp.status == 'not_attending' %}selected{% endif %}>Not Attending</option>
-                <option value="maybe" style="color: #000;" {% if player_rsvp.status == 'maybe' %}selected{% endif %}>Maybe</option>
-            </select>
-            <input type="text" name="reason" value="{{ player_rsvp.reason }}" placeholder="Reason (Optional)" style="padding: 10px; border-radius: var(--radius-md); background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); flex: 1; min-width: 200px;">
-            <button type="submit" class="btn btn-primary">Update RSVP</button>
-        </div>
+        <input type="text" name="reason" value="{{ player_rsvp.reason|default:'' }}" placeholder="Optional reason / note"
+               style="flex: 1; min-width: 200px; padding: 10px 14px; border-radius: 100px; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); font-size: 0.88rem;">
+        <button type="submit" name="status" value="attending"
+                style="padding: 10px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(52,199,89,0.5); {% if player_rsvp.status == 'attending' %}background: #5edea0; color: #1c1c1e;{% else %}background: rgba(52,199,89,0.18); color: #5edea0;{% endif %}">✓ Approve</button>
+        <button type="submit" name="status" value="maybe"
+                style="padding: 10px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,179,64,0.5); {% if player_rsvp.status == 'maybe' %}background: #ffb340; color: #1c1c1e;{% else %}background: rgba(255,179,64,0.18); color: #ffb340;{% endif %}">? Maybe</button>
+        <button type="submit" name="status" value="not_attending"
+                style="padding: 10px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,107,107,0.5); {% if player_rsvp.status == 'not_attending' %}background: #ff6b6b; color: #1c1c1e;{% else %}background: rgba(255,107,107,0.18); color: #ff6b6b;{% endif %}">✗ Reject</button>
     </form>
 </div>
 {% endif %}

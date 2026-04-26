@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'feedback.apps.FeedbackConfig',
     'lineups.apps.LineupsConfig',
     'chat.apps.ChatConfig',
+    'notifications.apps.NotificationsConfig',
 ]
 
 MIDDLEWARE = [
@@ -73,6 +74,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'accounts.context_processors.role_context',
+                'notifications.context_processors.unread_count',
             ],
         },
     },
@@ -138,3 +140,8 @@ STATIC_URL = 'static/'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+# Email — console backend prints messages to the runserver terminal.
+# Swap to django.core.mail.backends.smtp.EmailBackend with EMAIL_HOST/EMAIL_HOST_USER/EMAIL_HOST_PASSWORD for real delivery.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'VolleyHub <noreply@volleyhub.local>'

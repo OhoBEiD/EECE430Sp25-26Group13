@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="page-header" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        <h2>{{ thread.name }}</h2>
-        <p class="subtitle">{{ thread.get_thread_type_display }}</p>
-    </div>
-    <a href="{% url 'chat_index' %}" class="btn btn-secondary">Back to Channels</a>
+{% include '_page_banner.html' with image_url='https://images.unsplash.com/photo-1572454181157-0b40dd7667fe?w=1600&h=500&fit=crop' eyebrow=thread.get_thread_type_display title=thread.name subtitle='Live chat — messages stream in real time.' aspect='16/5' %}
+
+<div style="margin-bottom: 16px;">
+    <a href="{% url 'chat_index' %}" class="btn btn-secondary">← Back to channels</a>
 </div>
 
 <div class="glass-card" style="padding: 0; display: flex; flex-direction: column; height: 65vh; border-radius: var(--radius-lg); overflow: hidden;">
