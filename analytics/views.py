@@ -1,18 +1,43 @@
 import json
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
+
+from django.http import Http404
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect, render
+
+from accounts.decorators import role_required, self_player_or_role
+from accounts.permissions import can_record_stats
+from accounts.querysets import players_for
+from accounts.roles import Role, role_of
+
 from players.models import VolleyPlayer
-from .models import PlayerStats
+
 from .forms import StatsForm
+from .models import PlayerStats
 
 
+ALL_AUTHED = (Role.PLAYER, Role.COACH, Role.MANAGER, Role.SCOUT, Role.ADMIN)
+VIEW_ANYONE = (Role.COACH, Role.MANAGER, Role.SCOUT, Role.ADMIN)
+RECORDERS = (Role.COACH, Role.MANAGER, Role.ADMIN)
+DELETERS = (Role.MANAGER, Role.ADMIN)
+
+
+@role_required(*ALL_AUTHED)
 def analytics_select(request):
-    players = VolleyPlayer.objects.all()
+    players = players_for(request.user).order_by('name')
+    if role_of(request.user) == Role.PLAYER:
+        profile = getattr(request.user, 'profile', None)
+        if profile and profile.linked_player_id:
+            players = players.filter(pk=profile.linked_player_id)
+        else:
+            players = players.none()
     return render(request, 'analytics/select_player.html', {'players': players})
 
 
+@self_player_or_role(*VIEW_ANYONE, player_pk_kwarg='player_pk')
 def analytics_dashboard(request, player_pk):
     player = get_object_or_404(VolleyPlayer, pk=player_pk)
+    if not players_for(request.user).filter(pk=player.pk).exists():
+        raise Http404
     all_stats = PlayerStats.objects.filter(player=player).order_by('date_recorded')
     latest_stats = all_stats.order_by('-date_recorded').first()
     previous_stats = all_stats.order_by('-date_recorded')[1] if all_stats.count() > 1 else None
@@ -29,7 +54,6 @@ def analytics_dashboard(request, player_pk):
         'overall': s.overall_score,
     } for s in all_stats])
 
-    # Calculate differences for trend arrows
     diffs = {}
     if latest_stats and previous_stats:
         diffs = {
@@ -54,14 +78,17 @@ def analytics_dashboard(request, player_pk):
     return render(request, 'analytics/dashboard.html', context)
 
 
-@login_required
+@role_required(*RECORDERS)
 def record_stats(request, player_pk):
     player = get_object_or_404(VolleyPlayer, pk=player_pk)
+    if not can_record_stats(request.user, player):
+        raise PermissionDenied
     if request.method == 'POST':
         form = StatsForm(request.POST)
         if form.is_valid():
             stats = form.save(commit=False)
             stats.player = player
+            stats.recorded_by = request.user
             stats.save()
             return redirect('analytics_dashboard', player_pk=player.pk)
     else:
@@ -72,7 +99,7 @@ def record_stats(request, player_pk):
     })
 
 
-@login_required
+@role_required(*DELETERS)
 def stats_delete(request, pk):
     stat = get_object_or_404(PlayerStats, pk=pk)
     player_pk = stat.player.pk

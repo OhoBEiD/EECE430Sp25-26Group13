@@ -60,11 +60,11 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">Salary</span>
-                <span class="detail-value" style="font-variant-numeric: tabular-nums;">${{ player.salary }}</span>
+                <span class="detail-value" style="font-variant-numeric: tabular-nums;">{% if is_visitor or is_scout %}<em style="color: rgba(255,255,255,0.45);">— redacted —</em>{% else %}${{ player.salary }}{% endif %}</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Contact</span>
-                <span class="detail-value">{{ player.contact_person }}</span>
+                <span class="detail-value">{% if is_visitor or is_scout %}<em style="color: rgba(255,255,255,0.45);">— redacted —</em>{% else %}{{ player.contact_person }}{% endif %}</span>
             </div>
         </div>
 

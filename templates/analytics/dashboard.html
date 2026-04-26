@@ -26,10 +26,12 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 All Players
             </a>
+            {% if is_coach or is_manager or is_admin %}
             <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Record Stats
             </a>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -39,10 +41,12 @@
 <div class="glass-card-dark" style="text-align: center; padding: 80px 32px;">
     <div style="font-size: 3.5rem; margin-bottom: 16px; opacity: 0.5;">&#128202;</div>
     <p style="color: rgba(255,255,255,0.6); font-size: 1rem; margin-bottom: 24px;">No performance data recorded yet for {{ player.name }}.</p>
+    {% if is_coach or is_manager or is_admin %}
     <a href="{% url 'record_stats' player.pk %}" class="btn btn-success btn-lg">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Record First Stats
     </a>
+    {% endif %}
 </div>
 
 {% else %}
@@ -184,6 +188,7 @@
                     ">{{ stat.overall_score }}</span>
                 </td>
                 <td>
+                    {% if is_manager or is_admin %}
                     <form method="post" action="{% url 'stats_delete' stat.pk %}" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this stats entry?');">
@@ -191,6 +196,7 @@
                             Delete
                         </button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
