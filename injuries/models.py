@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from players.models import VolleyPlayer
 
@@ -25,6 +26,14 @@ class Injury(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Active')
     medical_notes = models.TextField(blank=True)
     reported_by = models.CharField(max_length=100)
+    reported_by_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='reported_injuries',
+        help_text='Authenticated user who reported this injury (preferred over the legacy text field).',
+    )
 
     class Meta:
         ordering = ['-date_reported']

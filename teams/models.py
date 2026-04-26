@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -9,7 +10,18 @@ class Team(models.Model):
         ('U18', 'Under 18'),
         ('Senior', 'Senior'),
     ])
-    coach_name = models.CharField(max_length=100)
+    coach_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text='Legacy free-text coach label. Prefer the coach FK; this field is dropped in PR 8.',
+    )
+    coach = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='coached_teams',
+    )
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

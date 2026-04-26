@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from players.models import VolleyPlayer
 
@@ -12,6 +13,13 @@ class PlayerStats(models.Model):
     set_accuracy = models.IntegerField(help_text='0-100')
     receive_rating = models.IntegerField(help_text='0-100')
     notes = models.TextField(blank=True)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='recorded_stats',
+    )
 
     class Meta:
         ordering = ['-date_recorded']

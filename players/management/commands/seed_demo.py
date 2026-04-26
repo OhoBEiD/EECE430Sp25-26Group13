@@ -114,6 +114,10 @@ class Command(BaseCommand):
         self.stdout.write('→ Creating teams…')
         teams = [Team.objects.create(**t) for t in DEMO_TEAMS]
 
+        self.stdout.write('→ Assigning Beirut Blazers coach → coach_ahmad…')
+        teams[0].coach = users_by_name['coach_ahmad']
+        teams[0].save(update_fields=['coach'])
+
         self.stdout.write('→ Creating players…')
         players = []
         for i, (name, pos, salary, contact) in enumerate(DEMO_PLAYERS):
@@ -156,6 +160,7 @@ class Command(BaseCommand):
             expected_return=today + timedelta(days=7),
             status='Active',
             reported_by='Coach Ahmad',
+            reported_by_user=users_by_name['coach_ahmad'],
             medical_notes='Rolled left ankle at practice. Mild swelling, RICE protocol.',
         )
         Injury.objects.create(
@@ -187,9 +192,11 @@ class Command(BaseCommand):
         )
 
         self.stdout.write('→ Creating player stats…')
-        # Record 3 stat lines for one captain per team — so analytics dashboard shows trends
+        # Record 3 stat lines for one captain per team — so analytics dashboard shows trends.
+        # Beirut Blazers captain stats are attributed to coach_ahmad to demo recorded_by FK.
         captains = [players[0], players[5], players[10]]
         for captain in captains:
+            recorder = users_by_name['coach_ahmad'] if captain.team_id == teams[0].id else None
             for offset, stats in enumerate([
                 (68, 65, 60, 72, 80, 70),
                 (72, 70, 64, 74, 82, 73),
@@ -202,6 +209,7 @@ class Command(BaseCommand):
                     block_rate=stats[2], dig_success=stats[3],
                     set_accuracy=stats[4], receive_rating=stats[5],
                     notes=f'Week {offset + 1} measurement.',
+                    recorded_by=recorder,
                 )
 
         self.stdout.write(self.style.SUCCESS(
