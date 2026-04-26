@@ -1,26 +1,31 @@
 from datetime import date
 
-from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, F
-from django.shortcuts import render, get_object_or_404, redirect
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Injury
+from accounts.decorators import role_required
+from accounts.permissions import can_view_injury
+from accounts.querysets import injuries_for
+from accounts.roles import Role
+
 from .forms import InjuryForm
+from .models import Injury
 
 
 INJURY_STATUS_CHOICES = ['Active', 'Recovering', 'Cleared']
 
+VIEWERS = (Role.PLAYER, Role.COACH, Role.MANAGER, Role.SCOUT, Role.ADMIN)
+WRITERS = (Role.COACH, Role.MANAGER, Role.ADMIN)
+DELETERS = (Role.MANAGER, Role.ADMIN)
 
+
+@role_required(*VIEWERS)
 def injury_list(request):
-    all_injuries = Injury.objects.select_related('player').all()
+    all_injuries = injuries_for(request.user).select_related('player')
     active_count = all_injuries.filter(status='Active').count()
     recovered_count = all_injuries.filter(status='Cleared').count()
 
-    # Average recovery days for cleared injuries that have both dates
-    cleared_with_dates = all_injuries.filter(
-        status='Cleared',
-        expected_return__isnull=False,
-    )
+    cleared_with_dates = all_injuries.filter(status='Cleared', expected_return__isnull=False)
     if cleared_with_dates.exists():
         total_days = 0
         count = 0
@@ -50,8 +55,11 @@ def injury_list(request):
     })
 
 
+@role_required(*VIEWERS)
 def injury_detail(request, pk):
     injury = get_object_or_404(Injury.objects.select_related('player'), pk=pk)
+    if not can_view_injury(request.user, injury):
+        raise PermissionDenied
 
     recovery_percent = None
     if injury.date_reported and injury.expected_return:
@@ -66,38 +74,43 @@ def injury_detail(request, pk):
     })
 
 
-@login_required
+@role_required(*WRITERS)
 def injury_create(request):
     if request.method == 'POST':
-        form = InjuryForm(request.POST)
+        form = InjuryForm(request.POST, user=request.user)
         if form.is_valid():
-            form.save()
+            injury = form.save(commit=False)
+            if not injury.reported_by_user_id:
+                injury.reported_by_user = request.user
+            injury.save()
             return redirect('injury_list')
     else:
-        form = InjuryForm()
+        form = InjuryForm(user=request.user)
     return render(request, 'injuries/injury_form.html', {
         'form': form,
         'title': 'Log New Injury',
     })
 
 
-@login_required
+@role_required(*WRITERS)
 def injury_edit(request, pk):
     injury = get_object_or_404(Injury, pk=pk)
+    if not can_view_injury(request.user, injury):
+        raise PermissionDenied
     if request.method == 'POST':
-        form = InjuryForm(request.POST, instance=injury)
+        form = InjuryForm(request.POST, instance=injury, user=request.user)
         if form.is_valid():
             form.save()
             return redirect('injury_detail', pk=injury.pk)
     else:
-        form = InjuryForm(instance=injury)
+        form = InjuryForm(instance=injury, user=request.user)
     return render(request, 'injuries/injury_form.html', {
         'form': form,
         'title': 'Edit Injury',
     })
 
 
-@login_required
+@role_required(*DELETERS)
 def injury_delete(request, pk):
     injury = get_object_or_404(Injury.objects.select_related('player'), pk=pk)
     if request.method == 'POST':

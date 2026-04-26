@@ -1,4 +1,7 @@
 from django import forms
+
+from accounts.querysets import players_for
+
 from .models import Injury
 
 
@@ -21,3 +24,8 @@ class InjuryForm(forms.ModelForm):
             'medical_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'reported_by': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            self.fields['player'].queryset = players_for(user).order_by('name')
