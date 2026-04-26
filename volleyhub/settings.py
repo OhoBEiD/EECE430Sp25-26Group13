@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'analytics.apps.AnalyticsConfig',
     'teams.apps.TeamsConfig',
     'injuries.apps.InjuriesConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
