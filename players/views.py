@@ -1,16 +1,22 @@
 import csv
 
-from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import VolleyPlayer
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+from accounts.decorators import role_required
+from accounts.permissions import can_edit_player
+from accounts.querysets import players_for
+from accounts.roles import Role, role_of
+
 from .forms import PlayerForm
+from .models import VolleyPlayer
 
 
 def player_list(request):
     q = request.GET.get('q', '').strip()
-    qs = VolleyPlayer.objects.all()
+    qs = players_for(request.user).order_by('name')
     if q:
         qs = qs.filter(name__icontains=q)
     page_obj = Paginator(qs, 10).get_page(request.GET.get('page'))
@@ -23,10 +29,12 @@ def player_list(request):
 
 def player_detail(request, pk):
     player = get_object_or_404(VolleyPlayer, pk=pk)
+    if not players_for(request.user).filter(pk=player.pk).exists():
+        raise Http404
     return render(request, 'player_detail.html', {'player': player})
 
 
-@login_required
+@role_required(Role.MANAGER, Role.ADMIN)
 def player_add(request):
     if request.method == 'POST':
         form = PlayerForm(request.POST)
@@ -38,9 +46,11 @@ def player_add(request):
     return render(request, 'player_form.html', {'form': form, 'title': 'Add Player'})
 
 
-@login_required
+@role_required(Role.COACH, Role.MANAGER, Role.ADMIN)
 def player_edit(request, pk):
     player = get_object_or_404(VolleyPlayer, pk=pk)
+    if not can_edit_player(request.user, player):
+        raise PermissionDenied
     if request.method == 'POST':
         form = PlayerForm(request.POST, instance=player)
         if form.is_valid():
@@ -51,7 +61,7 @@ def player_edit(request, pk):
     return render(request, 'player_form.html', {'form': form, 'title': 'Edit Player'})
 
 
-@login_required
+@role_required(Role.MANAGER, Role.ADMIN)
 def player_delete(request, pk):
     player = get_object_or_404(VolleyPlayer, pk=pk)
     if request.method == 'POST':
@@ -60,6 +70,7 @@ def player_delete(request, pk):
     return render(request, 'player_confirm_delete.html', {'player': player})
 
 
+@role_required(Role.MANAGER, Role.ADMIN)
 def player_export_csv(request):
     q = request.GET.get('q', '').strip()
     qs = VolleyPlayer.objects.select_related('team').all()

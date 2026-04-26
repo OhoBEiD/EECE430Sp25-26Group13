@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load role_tags %}
 
 {% block content %}
 <!-- Floating VolleyHub Label -->
@@ -121,6 +122,7 @@
             </form>
 
             <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                {% if is_manager or is_admin %}
                 <a href="{% url 'player_add' %}" style="
                     display: inline-flex;
                     align-items: center;
@@ -159,6 +161,7 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download CSV
                 </a>
+                {% endif %}
 
                 {% if players %}
                 <span style="
@@ -221,6 +224,9 @@
                 </td>
                 <td>
                     <a href="{% url 'player_detail' player.pk %}">{{ player.name }}</a>
+                    {% if linked_player and linked_player.id == player.id %}
+                    <span style="margin-left: 8px; padding: 2px 8px; border-radius: 100px; font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(88, 86, 214, 0.25); color: rgba(175, 173, 255, 1); border: 1px solid rgba(88, 86, 214, 0.4);">You</span>
+                    {% endif %}
                     <span style="color: rgba(255,255,255,0.35); font-size: 0.72rem; margin-left: 6px;">#{{ player.id }}</span>
                 </td>
                 <td style="color: rgba(255,255,255,0.55);">{{ player.date_joined }}</td>
@@ -230,8 +236,13 @@
                 <td>
                     <div class="actions">
                         <a href="{% url 'player_detail' player.pk %}" class="btn btn-primary">View</a>
+                        {% can_edit_player player as can_edit %}
+                        {% if can_edit %}
                         <a href="{% url 'player_edit' player.pk %}" class="btn btn-warning">Edit</a>
+                        {% endif %}
+                        {% if is_manager or is_admin %}
                         <a href="{% url 'player_delete' player.pk %}" class="btn btn-danger">Delete</a>
+                        {% endif %}
                     </div>
                 </td>
             </tr>
@@ -285,11 +296,13 @@
 <div class="glass-card">
     <div class="empty-state">
         <div class="empty-icon">&#127951;</div>
-        <p>No players on the roster yet.</p>
+        <p>No players visible to your role.</p>
+        {% if is_manager or is_admin %}
         <a href="{% url 'player_add' %}" class="btn btn-success btn-lg">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add First Player
         </a>
+        {% endif %}
     </div>
 </div>
 {% endif %}
