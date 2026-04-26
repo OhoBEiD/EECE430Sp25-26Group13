@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'dashboard/_hero.html' with eyebrow="🔭 Scout view" title="Welcome back, "|add:user.username subtitle="Read-only access to rosters, teams, and analytics across the club. Personal injury notes are redacted." %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
+    <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Players</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">{{ player_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Browse roster &rarr;</div>
+    </a>
+    <a href="{% url 'team_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Teams</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">{{ team_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Compare squads &rarr;</div>
+    </a>
+    <a href="{% url 'analytics_select' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Analytics</div>
+        <div style="font-size: 1.2rem; font-weight: 700; color: #fff;">Per-player trends</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Stat lines over time &rarr;</div>
+    </a>
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Active injuries</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #ffb340; font-variant-numeric: tabular-nums;">{{ active_injury_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.5); margin-top: 4px;">Counts only — clinical notes redacted</div>
+    </div>
+</div>
+
+<h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Upcoming events</h3>
+{% include 'dashboard/_events_table.html' %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'dashboard/_hero.html' with eyebrow="🏐 Welcome" title="Welcome to VolleyHub" subtitle="Browse the public roster, teams, and upcoming events. Sign in to access player stats, injuries, and management tools." %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
+    <a href="{% url 'player_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Players</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">{{ player_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">View roster &rarr;</div>
+    </a>
+    <a href="{% url 'team_list' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Teams</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums;">{{ team_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">View squads &rarr;</div>
+    </a>
+    <a href="{% url 'schedule_view' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Events Next 7 Days</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #ffb340; font-variant-numeric: tabular-nums;">{{ upcoming_event_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">View schedule &rarr;</div>
+    </a>
+    <a href="{% url 'login' %}" class="glass-card-dark" style="text-decoration: none; padding: 24px; display: block; border: 1px solid rgba(88, 86, 214, 0.35);">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(175, 173, 255, 0.9); margin-bottom: 8px;">Sign in</div>
+        <div style="font-size: 1.2rem; font-weight: 600; color: #fff;">Get the full picture</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Players, coaches, scouts, managers, admins &rarr;</div>
+    </a>
+</div>
+
+<h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Upcoming events</h3>
+{% include 'dashboard/_events_table.html' %}
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if linked_player %}
+    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:linked_player.name subtitle="Your team schedule, your injury history, and your most recent stat lines — all in one place." %}
+{% else %}
+    {% include 'dashboard/_hero.html' with eyebrow="🏐 My VolleyHub" title="Welcome back, "|add:user.username subtitle="Your account isn't linked to a player record yet — ask a manager to link you so your dashboard fills in." %}
+{% endif %}
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;" class="stagger">
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">My team</div>
+        <div style="font-size: 1.2rem; font-weight: 700; color: #fff;">
+            {% if linked_player and linked_player.team %}{{ linked_player.team.name }}{% else %}—{% endif %}
+        </div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">
+            {% if linked_player and linked_player.team %}{{ linked_player.team.age_group }} squad{% endif %}
+        </div>
+    </div>
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">Open injuries</div>
+        <div style="font-size: 2rem; font-weight: 700; color: {% if open_injury_count %}#ff6b6b{% else %}#5edea0{% endif %}; font-variant-numeric: tabular-nums;">{{ open_injury_count }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Tracked under your record</div>
+    </div>
+    <div class="glass-card-dark" style="padding: 24px;">
+        <div style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">My next 7 days</div>
+        <div style="font-size: 2rem; font-weight: 700; color: #ffb340; font-variant-numeric: tabular-nums;">{{ own_events|length }}</div>
+        <div style="font-size: 0.78rem; color: rgba(175, 173, 255, 0.8); margin-top: 4px;">Practice &amp; games on your team</div>
+    </div>
+</div>
+
+<h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Your team's upcoming events</h3>
+{% include 'dashboard/_events_table.html' with events=own_events empty_text="No team events in the next 7 days." %}
+
+{% if own_injuries %}
+<h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 32px 0 16px;">Your injury history</h3>
+<div class="glass-table-wrapper">
+    <table>
+        <thead>
+            <tr><th>Type</th><th>Body part</th><th>Severity</th><th>Status</th><th>Reported</th><th>Expected return</th></tr>
+        </thead>
+        <tbody>
+            {% for inj in own_injuries %}
+            <tr>
+                <td>{{ inj.injury_type }}</td>
+                <td>{{ inj.body_part }}</td>
+                <td>{{ inj.severity }}</td>
+                <td>{{ inj.status }}</td>
+                <td style="color: rgba(255,255,255,0.7);">{{ inj.date_reported|date:"M j, Y" }}</td>
+                <td style="color: rgba(255,255,255,0.7);">{% if inj.expected_return %}{{ inj.expected_return|date:"M j, Y" }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

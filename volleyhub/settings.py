@@ -124,5 +124,5 @@ STATIC_URL = 'static/'
 
 # Authentication redirects
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'player_list'
+LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
