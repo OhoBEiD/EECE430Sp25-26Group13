@@ -16,7 +16,7 @@
         </div>
         <div class="detail-row">
             <span class="detail-label">Coach</span>
-            <span class="detail-value">{% if team.coach %}{{ team.coach.get_full_name|default:team.coach.username }}{% else %}{{ team.coach_name|default:"—" }}{% endif %}</span>
+            <span class="detail-value">{% if team.coach %}{{ team.coach.get_full_name|default:team.coach.username }}{% else %}—{% endif %}</span>
         </div>
         {% if team.description %}
         <div class="detail-row">

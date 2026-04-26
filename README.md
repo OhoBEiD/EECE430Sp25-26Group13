@@ -46,6 +46,24 @@ docker run -p 8000:8000 volleyhub
 - `teams/` — teams by age group + event scheduling (practice/game/tournament)
 - `injuries/` — injury tracking with recovery status and expected return
 - `analytics/` — per-player performance stats across 6 metrics + trends
+- `accounts/` — `UserProfile` (role + linked player), role decorators, per-role dashboards, `/me/`, `/coach/`, `/admin-ui/users/`
+
+## Roles
+
+Six roles, each with a different dashboard, dock, and capability set. Visitor is implicit (anonymous request, no DB row).
+
+| Role | Dashboard | Read scope | Write scope |
+|---|---|---|---|
+| **Visitor** | `dashboard_visitor` | All players/teams/schedule (PII redacted) | None |
+| **Player** | `dashboard_player` | Own team only; own injuries; own stats | None |
+| **Coach** | `dashboard_coach` + `/coach/` | Own coached teams + their players/injuries/stats | Edit own team, manage roster, log injuries, record stats |
+| **Manager** | `dashboard_manager` | All | Full CRUD + CSV export |
+| **Scout** | `dashboard_scout` | All (with `medical_notes`, `salary`, `contact_person` redacted) | None |
+| **Admin** | `dashboard_admin` + `/admin-ui/users/` | All | Full CRUD + role assignment + Django admin |
+
+Demo accounts (`demo12345`): `player_omar`, `coach_ahmad`, `manager_sara`, `scout_layla`, `admin_volleyhub`.
+
+Manual verification walk-through: [`docs/sprint3-verification.md`](docs/sprint3-verification.md).
 
 ## Definition of Done
 
@@ -63,6 +81,9 @@ A user story is **Done** when:
 |--------|-------|---------------|-----------------|-----|
 | 1 | 2026-04-14 | 10 | 10 | `v0.1-sprint1` |
 | 2 | 2026-04-14 | 11 | 11 | `v0.2-sprint2` |
+| 3 | 2026-04-26 | 33 | 33 | `v0.3-sprint3` |
+
+Sprint 3 (role-based interfaces) shipped as 8 PRs: foundation → ownership FKs → permission infra → per-role dashboards/dock → players/teams enforcement → injuries/analytics enforcement + PII redaction → dedicated pages (/me, /coach, /admin-ui) → cleanup.
 
 Retros: [`docs/sprint1-retro.md`](docs/sprint1-retro.md) · [`docs/sprint2-retro.md`](docs/sprint2-retro.md)
 

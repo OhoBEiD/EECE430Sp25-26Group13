@@ -38,8 +38,8 @@ class RoleWorld:
     """Minimal world: 2 teams, 2 players, one user per role."""
 
     def __init__(self):
-        self.team_blazers = Team.objects.create(name='Blazers', age_group='Senior', coach_name='—')
-        self.team_cedars = Team.objects.create(name='Cedars', age_group='U18', coach_name='—')
+        self.team_blazers = Team.objects.create(name='Blazers', age_group='Senior')
+        self.team_cedars = Team.objects.create(name='Cedars', age_group='U18')
 
         self.player_omar = VolleyPlayer.objects.create(
             name='Omar', date_joined=date.today(), position='Setter',
